@@ -2,6 +2,9 @@
 title: "Getting Started with R and RStudio"
 output: html_document
 ---
+[Head back to tutorial homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
+
+
 ## Introduction to R
 ### Downloading and installing R and Rstudio
 The first step is to download and install R, which is freely available and can be accessed [here](https://cran.r-project.org/mirrors.html). You can choose any of the "mirrors" you want, but it is best to use the one that is closest to you geographically (i.e., the one at [Oregon State University](https://ftp.osuosl.org/pub/cran/)).

@@ -6,6 +6,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+[Head back to tutorial homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
+
 
 ## Visualizing Data
 ### Getting started

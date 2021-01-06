@@ -1,0 +1,120 @@
+---
+title: "Regression"
+author: "Kristopher Kyle"
+date: "2/13/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regression: Predicting dependent variable values based on independent variable values
+
+To fully understand the information on this page, be sure to read the (previous tutorial on correlation)[https://kristopherkyle.github.io/SLS-670/docs/6_Correlations.html].
+
+Regression is used for value prediction. For example, lets imagine that we have a set of writing proficiency scores (dependent variable) and corresponding mean word frequency values (which are a measure of lexical sophistication; this would be an independent variable). Regression allows us to predict the writing proficiency scores based on the mean frequency values. The stronger the relationship is between the two values, the better the predictions will be.
+
+Conceptually (and mathematically), regression is the same as correlation. The only difference is that the results of a regression include more information, namely the characteristics of the line of best fit through the data.
+
+### Assumptions
+The assumptions for (single) linear regression are the same as for Pearson correlations, so the methods for testing those assumptions won't be repeated here (again, check out the (correlation tutorial)[https://kristopherkyle.github.io/SLS-670/docs/6_Correlations.html]).
+
+The main assumptions of (single) linear regression are:
+
+- The variables must be continuous (see other tests for ordinal or categorical data)
+
+- The variables must be normally distributed
+
+- The variables must have a linear relationship
+
+- There are no outliers (or there are only minimal outliers in large samples)
+
+### Visualizing a linear regression
+In this example, we are going to use the same data as in the correlation tutorial (correlation_sample.csv). We will be using frequency_CW to predict scores for nwords (which we are using as a (flawed) proxy for proficiency).
+
+First, we load ggplot and the data:
+
+``` {r}
+library(ggplot2)
+cor_data <- read.csv("data/correlation_sample.csv", header = TRUE)
+summary(cor_data)
+```
+
+Then, we will plot the data and add a regression line in order to get an idea of what the data looks like:
+
+```{r}
+ggplot(cor_data, aes(y = nwords, x=frequency_CW )) +
+  geom_point() +
+  #this is how we add the regression line
+  geom_smooth(method="lm")
+```
+
+If we want to check the degree to which our straight line is appropriate for the data, we can also add a LOESS line, which is a line of best fit that does not presume linearity (i.e., a straight line). In this case, the LOESS line is fairly close to the straight line of best fit, suggesting that are data is indeed roughly linear.
+
+```{r}
+ggplot(cor_data, aes(y = nwords, x=frequency_CW )) +
+  geom_point() +
+  #this is how we add the regression line
+  geom_smooth(method="lm") +
+  #add red LOESS line, don't include standard error
+  geom_smooth(se = FALSE, color = "red")
+```
+
+### Conducting a linear regression
+
+Linear regression is very easy to do in R. We simply use the lm() function:
+
+```{r}
+#define model1 as a regression model using frequency_CW to predict nwords
+model1 <- lm(nwords ~ frequency_CW, data = cor_data)
+```
+
+We then can see the model summary using the summary() function:
+
+```{r}
+#define model1 as a regression model using frequency_CW to predict nwords
+summary(model1)
+```
+
+There is a wealth of information provided by this output. For the purposes of this tutorial, we are interested in five particular pieces, including the Estimate(s), the Std. Error, the p-value, the Multiple R-squared, and the Adjusted R-squared.
+
+#### Estimate(s)
+The estimate(s) provide the information needed to construct the regression line (and therefore predict nwords values based on frequency_CW values).
+
+The intercept estimate value (in this case, 729.93) indicates the value for nwords when frequency_CW = 0 (this is the y - intercept).
+
+The frequency_CW estimate indicates the slope of the line of best fit. For every decrease of 151.41 in nwords, frequency_CW values will increase by 1.
+
+For any frequency_CW value, we can predict the nwords value using the following formula: nwords = (frequency_CW value * -151.42) + 729.93. So, if our frequency value is 2, we will predict that nwords will be 427.09 (see below for this calculation)
+
+```{r}
+(2*-151.42) + 729.93
+```
+
+We can also use the R function predict() to calculate the predicted values for all values in our data frame:
+
+```{r}
+#create list of predicted nwords values
+pred <- predict(model1)
+#print first 6 rows
+print(head(pred))
+```
+
+#### Standard Error (Std. Error)
+The standard error figures indicate the standard deviation in the predicted values. Higher standard error indicates a less optimal model. The standard error for the intercept is 90.92, and the standard error for frequency_CW is 33.37.
+
+#### Probability value (p-value)
+This indicates the likelihood of observing this data if there were no relationship between our two variables. In this case, the p=value is quite low (7.201e-06, or .000007201, or .0007201%).
+
+#### Multiple R-squared
+This is the effect size for regressions. It is the squared value of the correlation coefficient, and indicates the amount of shared variance between the two variables. In this case, frequency_CW explains 4.13% of the variance in nwords scores (R-squared = .0413), which is quite small.
+
+#### Adjusted R-squared
+This is the effect size adjusted for the number of predictor variables used. As we increase variables, the adjusted R-squared will be progressively lower than the unadjusted value. In this case, our Adjusted R-squared value is .03929.
+
+#### Obligatory Stats Joke
+![from xkcd: https://xkcd.com/1725/](https://imgs.xkcd.com/comics/linear_regression.png)
+
+### Next up: Multiple Regression
+In the next tutorial, we will look at using multiple independent variables to predict the values of a dependent variable.

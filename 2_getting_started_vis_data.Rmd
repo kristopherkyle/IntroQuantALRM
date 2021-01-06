@@ -1,0 +1,122 @@
+---
+title: "Introduction to Data Visualization"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Visualizing Data
+### Getting started
+One particularly powerful aspect of R is that it enables one visualize data in a variety of ways. Additionally, it gives users a wide variety of customization options. We will work below on a number of common data visualizations. But rememeber, once you get the hang of the basics, the sky is the limit! Note that this tutorial is a simplified version of [this one] (https://r4ds.had.co.nz/data-visualisation.html). For more details on what is possible, check out the source webpages!
+
+To get started, lets load ggplot and look at one of the datasets that comes with ggplot:
+
+```{r}
+library(ggplot2)
+summary(mpg)
+```
+
+As we can see from the summary, this dataset includes a number of characteristics of cars that might affect fuel efficiency (in miles per gallon for city or highway driving) from 1999 to 2008. Remember that we can get more detailed information about the dataset by using the "help" function in R:
+
+```{r}
+help(mpg)
+```
+
+### Making our first plot: Scatterplots
+First, I am going to make a simple prediction regarding the relationship between highway fuel efficiency (hwy) and engine size (displ). My hypothesis is that larger engines will have lower fuel efficiency. Lets see if this hypothesis appears to fit the data.
+
+```{r}
+ggplot(data = mpg) + #this tells ggplot which dataset to use
+  geom_point(mapping = aes(x = displ, y = hwy)) #this sets the x and y axis and plots each data point
+```
+
+As the plot indicates, there seems to be a negative relationship between highway fuel efficiency and engine size (as we hypothesized).
+
+We can also add a line of best fit, which is used in the calculation of correlations. Note that adding layers to plots using ggplot is very simple. We only need to use the "+" symbol.
+
+```{r}
+ggplot(data = mpg) + #this tells ggplot which dataset to use
+  geom_point(mapping = aes(x = displ, y = hwy)) + #this sets the x and y axis and plots each data point
+  geom_smooth(mapping = aes(x = displ, y = hwy), method = lm) #this creates the line of best fit
+```
+
+To explore this dataset further, we can add more information to the plot. Next, we will make the points on the plot different colors based on the type of car.
+
+```{r}
+ggplot(data = mpg) + #this tells ggplot which dataset to use
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + #this sets the x and y axis and plots each data point, "color" is used here to differ the color of the dots based on the class of car (suv, etc.)
+  geom_smooth(mapping = aes(x = displ, y = hwy), method = lm, color = "black") #here, we set the color of the line explicitly to black
+```
+
+Sometimes it is useful to see how the the relationship between two variables changes based on a third. While the above graph helps us to that, we can also display each class in its own graph.
+
+```{r}
+ggplot(data = mpg) + #this tells ggplot which dataset to use
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + #this sets the x and y axis and plots each data point, "color" is used here to differ the color of the dots based on the class of car (suv, etc.)
+  geom_smooth(mapping = aes(x = displ, y = hwy), method = lm, color = "black") + #here, we set the color of the line explicitly to black
+  facet_wrap(~ class, ncol = 2) #this will make multiple graphs based on class. Note that ncol (number of columns) and nrow (number of rows) can be set explicitly (but don't have to be)
+```
+
+### Working with categorial variables: Box plots
+
+Another way that we commonly analyze data is to compare two or more groups based on particular criteria. Below, we will compare the average fuel efficiency of cars based on their class using boxplots. Note that the center line indicates the median score (in this case, fuel efficiency), the boxes indicate the 25% quantile (lower line) and 75% quantile (upper line), and the whiskers include data points that extend no more than 1.5 times the interquartile range. The dots represent outliers.
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = class, y = hwy))
+```
+
+If we want, we can also plot the actual data on top of the boxplots using geom_jitter():
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = class, y = hwy), outlier.shape = NA) +
+  geom_jitter(mapping = aes(x = class, y = hwy), width = 0.2)
+```
+
+We can also compare data based on another categorical variable. Below we distinguish each category based on drive type (four wheel drive, front wheel drive, and rear wheel drive).
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = class, y = hwy, color = drv))
+```
+
+### Working with frequency data: Bar Charts
+
+For this section, we will be working with another built in dataset that has a number of characteristics of c. 54,000 diamonds. Remember that we can use the "summary()" and "help()" functions to learn more about this dataset. For now, we will make a simple bar chart that will indicate the number of diamonds that have various cut qualities.
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut)) #note that in these charts, we only need to declare an x variable
+```
+
+We can, of course, change many visual aspects of this plot. Below, we will vary the bar colors based on cut:
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut)) #note that in these charts, we only need to declare an x variable
+```
+
+We can also compare the distribution of other categorical variables within each category on the x axis by changing the "fill" variable. Below, we will see the distribution of clarity within each cut category.
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity)) #note that in these charts, we only need to declare an x variable
+```
+
+We can also adjust these plots to look at the proportion of clarity across cut by using the position = "fill" argument:
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill") #note that in these charts, we only need to declare an x variable
+```
+
+Or, we can look at histograms of clarity for each cut using the position = "dodge" argument:
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge") #note that in these charts, we only need to declare an x variable
+```
+

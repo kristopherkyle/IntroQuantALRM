@@ -1,0 +1,110 @@
+---
+title: "Getting Started with R and RStudio"
+output: html_document
+---
+## Introduction to R
+### Downloading and installing R and Rstudio
+The first step is to download and install R, which is freely available and can be accessed [here](https://cran.r-project.org/mirrors.html). You can choose any of the "mirrors" you want, but it is best to use the one that is closest to you geographically (i.e., the one at [Oregon State University](https://ftp.osuosl.org/pub/cran/)).
+
+The second step is to download and install [Rstudio](https://rstudio.com/products/rstudio/), which is a very nice integrated development environment (IDE) for R. In a nutshell, it makes working with R much easier. You will want to install the Rstudio Desktop version that is appropriate for your operating system. After you have installed R and Rstudio, you can procede to the next step.
+
+### Getting started with R
+R is a programming language that was developed to help researchers analyze quantitative data (e.g., do statistics).
+As such, R can be used for conducting both simple mathematical functions and complex statistical analyses. See below for some of the simple things that you can do with R. Note that any code directly preceded with a "#" is ignored by R.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# addition
+1+2
+```
+```{r}
+#multiplication
+5*4
+```
+```{r}
+#division
+18/32
+```
+```{r}
+#power calculations
+5^2
+```
+```{r}
+#Square root
+sqrt(25)
+```
+In short, you can use R as a calculator if you wish.
+### Assigning variables
+We can also save values (or other objects) by assigning them to an arbitrary variable. We do this using "<-".
+```{r}
+VarName1 <- 5^2
+```
+Once we have saved a value (or other object) we can use it in later in various ways.
+```{r}
+print(VarName1) #display the value using the "print" function
+```
+```{r}
+VarName1 - 5
+```
+### Loading and installing packages
+R comes loaded with a large number of helpful packages and datasets. To access these datasets, we use the function library() which takes a package name as an argument.
+```{r}
+library("psych")
+```
+If you haven't installed the package "psych", then you will need to install it, which you can do using the function install.packages(), which takes the name of the package you want to install as an argument.
+```{r,eval=FALSE}
+install.packages("psych")
+```
+After installing the package, we can then load it. Note that we do NOT have to install packages each time we use R (we only have to do that once). We do, however, have to load the package each time we use R.
+```{r}
+library("psych")
+```
+If we want to get details regarding the use of a particular package, we can use the help() function, which will open the documentation for the chosen package.
+```{r}
+help(psych)
+```
+<center>
+![](https://github.com/kristopherkyle/SLS-670/blob/master/docs/psych_help_example.png?raw=true)
+</center>
+
+
+### Playing with some data in R
+R comes with a number of datasets pre-installed. Later on, we will load our own datasets, but for now, lets play with one that comes with R, called "mtcars". First, lets see what kind of data mtcars comprises. We can do this using the help() function.
+```{r}
+help(mtcars)
+```
+<center>
+![](https://github.com/kristopherkyle/SLS-670/blob/master/docs/mtcars_example.png?raw=true)
+</center>
+
+After running this code, you should see a description of the dataset in a separate window. As noted in that window, mtcars comprises data from Motor Trend magazine's tests of 32 cars in 1973-1974. We can get a statistical summary of this data by using the function summary()
+```{r}
+summary(mtcars)
+```
+As we can see above, the dataset includes 11 characteristics for the included 32 cars. We can easily plot the relationship between some of these characteristics using the function plot(). Note that we can access particular variables in our data by using the dataframe name (e.g., mtcars) followed by a dollar sign ($) and the variable name.
+```{r}
+plot(mtcars$mpg,mtcars$hp)
+```
+
+This plot seems to show a negative relationship between a car's horsepower and its fuel efficiency (MPG), which is likely what we would expect.
+
+### Installing and testing ggplot2
+One particularly useful package that we will be using a lot this semester is ggplot. The appropriate command for installing ggplot2 is included below.
+```{r,eval=FALSE}
+install.packages("ggplot2")
+```
+```{r}
+library("ggplot2")
+```
+Once ggplot is installed and loaded, we can quickly make nicer (and more sophisticated) plots. Below is an example of a rather simple one - a scatter plot with a line of best fit. We will learn more about ggplot in upcoming classes!
+```{r}
+ggplot(data = mtcars, aes(mpg,hp)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+### The end (for now)
+This is the end of our introduction to R for now. More will follow in upcoming classes.

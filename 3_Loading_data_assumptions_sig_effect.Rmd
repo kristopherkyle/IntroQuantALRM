@@ -1,0 +1,293 @@
+---
+title: "Loading data, more visualization, assumptions, significance, effect size"
+author: "Kristopher Kyle"
+date: "2/4/2019; revised 1/8/2021"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part I: Loading data, more practice with visualizing data
+
+### Loading data
+In previous tutorials, we have used dataframes that are part of the R base package or are part of ggplot2. Here, we will load data from a spreadsheet that is formatted as a comma separated values (.csv) document.
+
+Our first step will be to open a new R script and save it in a convenient location (e.g., in a folder named "Rday3" on your desktop).
+
+Our second step will be to download the [target .csv file](https://raw.githubusercontent.com/kristopherkyle/IntroQuantALRM/main/data/ICNALE_500_simple.csv.zip), extract it, and save a copy of the target .csv file ("ICNALE_500_simple.csv") in a folder called "data" in the Rday3 folder.
+
+Third, with our new R script open in RStudio, we will click on "Session" in the toolbar and "Set Working Directory"" to "Source File Location". This will let RStudio know where to look for your file(s).
+
+Finally, we will load our target .csv file ("ICNALE_500_simple.csv") as a dataframe (and in this case we will call that dataframe "fundata"). NOTE- click on the "code" button to see the code used in each section. For this page, the default is for the code to be hidden - try to write the code on your own before checking the answer.
+
+```{r}
+fundata <- read.csv("data/ICNALE_500_simple.csv", header = TRUE) #this presumes that the .csv file is in a subfolder entitled "data"
+summary(fundata)
+```
+
+Based on the summary output, we see that our dataframe has four variables (Participant, Nationality, VST, Proficiency_CEFR, and Proficiency_Number).
+
+These variable names represent the following:
+- Participant: Participant identifier
+- Nationality: Nationality of participant
+- VST: Score on receptive vocabulary size test
+- Proficiency_CEFR: Categorical proficiency rating based on the Common European Framework of Reference for Languges (CEFR)
+- Proficiency_Number: CEFR rating converted to a numerical scale (ranging from 1 to 4)
+
+### Visualizing the data
+
+Lets apply what we learned in the last tutorial to this new data. Don't forget to load ggplot2!
+
+```{r, results = "hide"}
+library(ggplot2)
+```
+
+#### Scatterplots
+First, lets create a scatterplot with a line of best fit to examine the relationship between VST (y-axis) and Proficiency_Number (x-axis). **What does the scatterplot indicate about the relationship between VST scores and Proficiency?**
+
+```{r}
+ggplot(data = fundata) + #this line indicates my dataset
+  geom_point(mapping = aes(x = Proficiency_Number, y = VST)) + #this line sets the x and y axis
+  geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm)
+```
+
+Now try to make the following plot, which shows the data by nationality (hint, I also used geom_jitter()).
+
+```{r}
+ggplot(data = fundata) + #this line indicates my dataset
+  geom_jitter(mapping = aes(x = Proficiency_Number, y = VST, color = Nationality)) + #this line sets the x and y axis
+  geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm)
+```
+
+Now, lets look at the trends by creating a different scatterplot for each (note that ncol = 3). **What do these scatterplots tell us about the relationship between VST scores and Proficiency across L1 groups/learning environments?**
+
+```{r}
+ggplot(data = fundata) + #this line indicates my dataset
+  geom_jitter(mapping = aes(x = Proficiency_Number, y = VST, color = Nationality)) + #this line sets the x and y axis
+  geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm) +
+  facet_wrap(~ Nationality, ncol = 3)
+```
+
+#### Boxplots
+
+Now, lets treat proficiency as a categorical variable. Create a graph with boxplots that shows the range of VST scores (y-axis) by Proficiency_CEFR (x-axis).
+
+```{r}
+ggplot(data = fundata) + 
+  geom_boxplot(mapping = aes(x = Proficiency_CEFR, y = VST))
+```
+
+Now, lets remove the outliers in our base plot, and add the actual data points to the boxplot (vary the points by nationality).
+
+```{r}
+ggplot(data = fundata) + 
+  geom_boxplot(mapping = aes(x = Proficiency_CEFR, y = VST), outlier.shape = NA) +
+  geom_jitter(mapping = aes(x = Proficiency_CEFR, y = VST, color = Nationality), width = 0.2)
+```
+
+## Part II: Assumptions, significance, and effect size
+
+### Some preliminary concepts in statistics
+
+### Mean, median, and mode
+
+__mean__ The mean is what the general population refers to as the "average" score. To get the mean, we divide the number of observed values by the number of observations.
+
+__median__ The median is the middle observed values (when all values are arranged in ascending/descending order).
+
+__mode__ The mode is the observed value that occurs most often.
+
+### Variance and standard deviation
+
+__population variance__ The variance in a set of observed values indicate how these values are distributed. To calculate the variance, we first subtract the mean from each of our observed values and square each of these values. We then calculate the mean for the squared values.
+
+__population standard deviation__ The standard deviation is the square root of the variance.
+
+__sample variance__ When we calculate the variance for a sample, we need to account for the fact that smaller samples will not perfectly reflect the population. In this case, when we calculate the mean for the squared values, we have to subtract one from the denominator. In small samples, this will have a large effect, but in large samples, the difference will be minimal. 
+
+__sample standard deviation__ The sample standard deviation is simply the square root of the sample variance.
+
+#### Calcuating descriptive statistics in R
+
+```{r}
+fundata <- read.csv("data/ICNALE_500_simple.csv", header = TRUE) #load data
+mean(fundata$VST) #mean VST score
+median(fundata$VST) #median VST score
+mode(fundata$VST) #mode 
+var(fundata$VST) #variance in VST scores - by default this is the sample variance
+sd(fundata$VST) #standard deviation of VST scores - by default this is the sample standard deviation
+```
+
+
+### Checking assumptions: Normality
+Many statistical tests require data that is normally distributed. These statistical tests are referred to as "parametric" statistical tests. Below, we will see how to to determine the degree to which our data is normally distributed both visually and statistically.
+
+In a normal distribution, the median and the mean values will be the same, and ~68% of the data points will be within one standard deviation of the mean. The figure below shows the shape of a normal distribution.
+
+```{r}
+library(ggplot2)
+#don't worry too much about this code - take a look at the plot
+ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 500, args = list(mean = 0, sd = 1)) + ylab("") + xlab("VST  (but not really - this is too perfect)") +
+  scale_y_continuous(breaks = NULL)
+```
+
+One way that we can check the degree to which our data is normally distributed is to check whether its distribution is similar to a perfectly normal distribution.
+
+```{r}
+#This code may be useful in the future.
+ggplot(fundata, aes(x=VST)) + 
+  geom_histogram(aes(y=..density..), color = "black", binwidth = 3) +
+  stat_function(fun = dnorm, n = 500, args = list(mean = mean(fundata$VST), sd = sd(fundata$VST)), color = "blue") +
+  ylab("") +
+  xlab("VST") +
+  scale_y_continuous(breaks = NULL)
+```
+
+It appears as though our data is not normally distributed (it doesn't look very much like the theoretical curve above). 
+
+Another way we can visually check our distribution is to use qq plots. If our data is normally distributed, then our actual data points will fall along our theoretical line (see plot below).
+
+```{r}
+ggplot(fundata, (aes(sample=VST))) + #note that the sample is the variable we are examinining
+  stat_qq() + #this adds the points
+  stat_qq_line() #this adds the theoretical line
+```
+
+In this case, we see that many of our observed data points fall above or below the theoretical line. This is further indication that our data is not normally distributed
+
+
+However, we can also test to see the degree to which the observed distribution differs from the theoretical one using the Shapiro-Wilk test. In this case, if the _p_ value is small (e.g., below .05), then we can assume that our observed distribution significantly differs from a normal distribution (i.e., it is not normal).
+
+```{r}
+shapiro.test(fundata$VST)
+```
+
+As we can see from the output, the VST scores are not normally distributed, indicating that we should not use parametric statistics using these values. Fortunately, there are a number of non-parametric tests that can be used (more on this later).
+
+### More assumptions
+Each statistical test has a variety of assumptions. As we learn about different tests, we will learn about these assumptions (and what to do if our data violates them).
+
+## Significance and Effect Size
+
+In quantitative research, we want to determine the probability that our observations (e.g., relationships between two variables or differences between groups) are random. As we will see below, probability estimates are inextricably connected to sample size. Accordingly, we also want to know how large the differences between the two populations are (via an effect size).  
+
+### Probability and Statistical Significance
+Statistical significance is inherently tied to probability. In this course we will talk about a number of (relatively) complicated methods for determining the probability of observing a particular result, but in this tutorial we will keep things reasonably simple. In real research, for example, we might want to know whether the probability that a difference in vocabulary test scores between two populations are random or may possibibly be meaningful (e.g., one population had better instruction than the other). We will get to that issue soon enough, but for now we are going to examine a simpler issue. Given a particular population (lets say a group of intermediate language learners at a particular institution), what is the probability that a student will earn a particular score?
+
+Let us assume for a moment that the scores are normally distributed with a range from 30 to 50, a mean of 40, and a standard deviation of 3.
+
+```{r}
+#don't worry too much about this code - see the plot
+library(dplyr)
+library(ggplot2)
+distr <- data.frame(x=seq(30, 50, length=300)) %>%
+  mutate( density = dnorm(x, mean=40, sd=3))
+
+ggplot(distr, aes(x=x, y=density)) +
+  geom_line() +
+  geom_area() +
+  theme_bw()
+```
+
+Now, lets say that we have a student (Student A) who earns a score of 34 on the test. By looking at a density plot, we can see that only a very small proportion of students who scored lower than Student A and a large proportion of students who scored higher.
+
+```{r}
+#don't worry too much about this code - see the plot
+distr <- data.frame(x=seq(30, 50, length=300)) %>%
+  mutate(density = dnorm(x, mean=40, sd=3),
+          group = ifelse(x<=34, 'Worse score than student A','Better score than student A'))
+
+ggplot(distr, aes(x=x, y=density, fill=group)) +
+  geom_line() +
+  geom_area() +
+  theme_bw()
+```
+
+To check this proportion precisely, we can use the pnorm() function.
+
+```{r}
+pnorm(34, mean = 40, sd = 3)
+```
+
+The pnorm() function indicates that 2.275% of students (.02275) scored lower than Student A. Conversely, this means that 97.72% (0.9772) students scored higher than Student A.
+
+First, this tells us that Student A scored particularly poorly on the vocabulary test in comparison to the rest of the population. For our purposes in this course, it more importantly tells us that if we were to randomly select a students test score from the larger population, there is only a 2.275% chance that we would find a score of 33 (or lower).
+
+Now, lets pretend that our vocabulary test is taken by all intermediate ESL courses in the USA, and we are able to record all of the mean scores. We find that these scores range from 10 to 65, with a mean of 27.5 and a standard deviation of 3. 
+
+```{r}
+#don't worry too much about this code - see the plot
+distr <- data.frame(x=seq(10, 65, length=10000)) %>%
+  mutate( density = dnorm(x, mean=37.5, sd=3))
+
+ggplot(distr, aes(x=x, y=density)) +
+  geom_line() +
+  geom_area() +
+  theme_bw()
+```
+
+One question we might ask is whether our students (with a mean score of 40) are on average significantly better than other groups of students. We plot this below:
+
+```{r}
+#don't worry too much about this code - see the plot
+distr <- data.frame(x=seq(10, 65, length=10000)) %>%
+  mutate(density = dnorm(x, mean=37.5, sd=3),
+  group = ifelse(x<=40, 'Worse than our mean','Better score than our mean'))
+
+ggplot(distr, aes(x=x, y=density, fill=group)) +
+  geom_line() +
+  geom_area() +
+  theme_bw()
+```
+
+```{r}
+pnorm(40, mean = 37.5, sd = 3)
+```
+
+The results indicate that our group of students get better scores than approximately 80% of the population, but 20% of the students get higher scores. So, if we took a random sample from the population of test scores, there is a 20% chance that the score would be higher than our mean.
+
+If we were to ask whether our mean course scores are statistically significantly larger than the average for the population, the answer would be... it depends. In the social sciences, we generally set the significance level (also called an "alpha" level) at _p_ = .05. This means that for an observed result to be significantly different from the population, it needs to be more extreme than 95% (.95) of population results.
+
+We can check the score we would need to achieve to hit a certain probability threshold by using the qnorm() function.
+
+```{r}
+qnorm(.95, mean = 37.5, sd = 3)
+```
+
+So, in order for our scores to be considered significantly better than the population, we would need to have an average score of 42.43.
+
+There are many caveats and more complicated situations that we will tackle when we look at each test covered in this course. Stay tuned.
+
+## Effect sizes
+A very important limitation of tests of statistical significance is that they are affected by both the sample size and the size of the observed differences (i.e., the effect). When the sample size is large enough, almost all differences between two groups will be considered statistically significant (due to the Central Limit Theorem).
+
+Effect sizes, however, are not affected by sample size and simply indicate the difference in average values across two populations. There are a number of different effect size calculations (we will learn a few of these as we learn different statistical tests), but arguable the most common are Cohen's D (for difference tests) and _r_ (for correlations). We'll discuss _r_ when we discuss correlations. 
+
+### Cohen's D
+Cohen's D is calculated as the |((mean of group A - mean of group B)/pooled standard deviation)|. In short, this tells us how many standard deviations apart the means for the two groups are.
+
+Below, we have two samples (lets call them two classes with VST scores). The red line represents the distribution of VST scores in our previously discussed class (mean=40, sd = 3). The blue line represents the distribution of VST scores in an imaginary, high achieving class (mean = 45, sd = 3).
+
+```{r}
+#don't worry too much about this code - see the plot
+distr <- data.frame(x=seq(30, 50, length=300)) %>%
+  mutate( density = dnorm(x, mean=40, sd=3))
+
+distr2 <- data.frame(x=seq(35, 55, length=300)) %>%
+  mutate( density = dnorm(x, mean=45, sd=3))
+
+ggplot(distr, aes(x=x, y=density)) +
+  geom_line(color = "red") +
+  #geom_area() +
+  geom_line(distr2, mapping = aes(x=x, y=density), color = "blue") +
+
+  theme_bw()
+  
+```
+
+To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 3). So, Cohen's D = (|-5/3| = 1.66), which is a large effect (according to Cohen, 1988)

@@ -10,6 +10,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+[Head back to tutorial homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
+
 
 ## Part I: Loading data, more practice with visualizing data
 

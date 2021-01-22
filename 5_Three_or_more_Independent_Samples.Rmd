@@ -1,0 +1,197 @@
+---
+title: "One Way ANOVA"
+author: "Kristopher Kyle"
+date: "(updated 1/22/2021)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE, warning = FALSE)
+```
+
+## Examining differences between more than two groups
+When we want to examine differences between two independent groups, a t-test or Man-Whitney U test are the most appropriate to use. If we have more than two independent groups, however, it is not appropriate to use these tests. Instead, we should use an Analysis of Variance (ANOVA) test or one of the non-parametric alternatives.
+
+### Assumptions of One-Way ANOVA
+To use an ANOVA, our data must meet the following assumptions:
+
+- The groups are independent (and do not include repeated measures)
+- There is a normal distribution of values in each group
+- The variance in each group is equal (this is call homogeneity of variance)
+- The data is continuous
+
+### Description of sample data
+In this tutorial, we will be looking at essays written by individuals at three different levels of lexical proficiency (Beginner, Intermediate, and High). We will also be looking at the average meaningfulness score for all words in each text. Meaningfulness scores are one way of determining how many concepts a particular word might be related to (e.g., the word "food" would be more "meaningful" than "zygote" because it could be used in more semantic contexts). We will be determining whether there are any differences in average meaningfulness scores based on lexical proficiency group.
+
+```{r}
+mydata <- read.csv("data/anova_sample.csv", header = TRUE)
+summary(mydata)
+```
+### Checking assumptions, visualizing the data
+
+#### Checking the assumption of normality
+First, we can create density plots to look at the distribution of each group. These density plots suggest that the data is roughly normal and that the variance is roughly equal.
+
+```{r}
+library(ggplot2)
+ggplot(mydata, aes(x=Meaningfulness_AW, color = Proficiency, fill=Proficiency)) +
+  geom_density(alpha = 0.4) #note that "alpha" sets the level of color transparency
+```
+
+We can also run a Shapiro-Wilk test for each group to test for normality. To do so, we create a dataframe for each proficiency group using dplyr(), then run the Shapiro-Wilk test for each group.
+
+```{r}
+#load dplyr package, which helps us manipulate datasets:
+library(dplyr)
+
+#create a new dataframe that includes only Beginner:
+beginner.ds <- mydata %>% filter(Proficiency == "Beginner")
+#create a new dataframe that includes only Int:
+intermediate.ds <- mydata %>% filter(Proficiency == "Int")
+#create a new dataframe that includes only High:
+high.ds <- mydata %>% filter(Proficiency == "High")
+
+#Test normality for Meaningfulness_AW in Beginner essays
+shapiro.test(beginner.ds$Meaningfulness_AW) #p = 0.2336
+
+#Test normality for Meaningfulness_AW in Int essays
+shapiro.test(intermediate.ds$Meaningfulness_AW) #p = 0.0112
+
+#Test normality for Meaningfulness_AW in High essays
+shapiro.test(high.ds$Meaningfulness_AW) #p = 0.1591
+
+```
+
+The results indicate that Meaningfulness_AW scores Beginner and High essays do not violate the assumption of normality, while Meaningfulness_AW scores for Int essays do (_p_ = 0.011). As mentioned in previous tutorials, the Shapiro-Wilk test is rather stringent, so we can decide whether we think it is appropriate to use a parametric or non-parametric test based on the visual inspection and on the Shapiro-Wilk test results.
+
+#### Checking the assumption of equal variance
+Second, we will check the assumption of equal variance (also known as homogeneity of variance). First, we will generate some boxplots, which (along with the distribution plots above), help give an indication of whether our groups have roughly equal variance. 
+
+```{r}
+ggplot(data = mydata) + 
+  geom_boxplot(mapping = aes(x = Proficiency, y = Meaningfulness_AW))
+```
+
+As you likely noticed in the boxplot above, ggplot organizes groups alphabetically by default (the order above is Beginner, High, Intermediate).
+
+However, we can adjust this using the reorder function (see below):
+```{r}
+ggplot(data = mydata) + 
+  geom_boxplot(aes(x = reorder(Proficiency, Meaningfulness_AW, FUN = median), y = Meaningfulness_AW, color = Proficiency)) +
+  xlab("Proficiency")
+```
+
+These boxplots support the notion that the variance is roughly equal, and also suggests that there may be meaningful differences between the groups. 
+
+We can also use Levene's test to statistically assess whether the variance is roughly equal between groups.
+
+```{r}
+library(car)
+leveneTest(Meaningfulness_AW ~ Proficiency, mydata) #the syntax here is variable ~ grouping variable, dataframe
+```
+
+The results of Levene's test indicate that the variance is roughly equal across our three proficiency groups, which means that our data meets this assumption.
+
+### Conducting a one-way Analysis of Variance (ANOVA)
+First, lets revisit the assumptions of an ANOVA:
+
+- The groups are independent (this assumption is met as each essay was written by a different individual)
+- There is a normal distribution of values in each group (this is arguably accurate based on visual inspection, though the intermediate group is not normally distributed based on the Shapiro-Wilk test)
+- The variance in each group is equal (visual inspection of boxplots and Levene's test indicate that this assumption is met)
+- The data is continuous (this assumption is met. Meaningfulness_AW is continuous)
+
+Now, lets run a one-way ANOVA to determine whether there are any differences between our groups. Note that an ANOVA will NOT tell us where the differences are (e.g., between which [or all] groups). An ANOVA only tells us whether there are any differences. To find out where differences exist (if any are found), we have to do post-hoc analyses.
+
+To determine whether any differences exist, we create a model called "anova_model" using the aov() function. We then use the summary() function to get the model statistics. 
+
+
+```{r}
+library(lsr)
+anova_model <- aov(Meaningfulness_AW~Proficiency, data = mydata)
+summary(anova_model)
+
+```
+
+There are a lot of numbers above, but for now we will only discuss Pr(>F) (this is our _p_ value). As we can see, there _is_ a significant difference between our groups (_p_ < .05).
+
+To determine how "big" the difference(s) are, we will use the etaSquared() function. Note that the rules of thumb for etaSquared are as follows:
+
+- .100-.299 (small)
+- .300-.599 (medium)
+- .600 - 1.000 (large)
+
+```{r}
+etaSquared(anova_model, type = 3)
+```
+
+As we see from the results, our effect is rather small (eta_squared = 0.148).
+
+#### Conducting pairwise comparisons
+To figure out where the differences are, we have to run pairwise comparisons. In this case, we will conduct Tukey HSD (Honest Significant Differences) test, which nicely balances the potential for Type I and Type II errors. As we see below, there are significant differences between each of our groups (look at the _p adj_ column, which reports a _p_ value that is adjusted for the number of comparisons made).
+
+```{r}
+TukeyHSD(anova_model)
+```
+
+To get an effect size for each contrast, we will have to do a little more work. Below, we create a new dataframe using the "filter" and "select" functions of dplyr to select only rows that have a Proficiency value of "Beginner" or "Int" (using filter), and only the columns Proficiency and Meaningfulness_AW. We then use the function "cohen.d" in the psych package to calculate the effect size between the "Beginner" and "Int" groups. As we see below, the effect between these groups is .54, which represents a medium effect.
+
+```{r}
+#create new df with only Beginner and Int
+mydata_beg_int <- mydata %>%
+  filter(Proficiency == "Beginner" | Proficiency == "Int") %>%
+  select(Proficiency, Meaningfulness_AW)
+#summary(mydata_effs_BI)
+
+library(psych)
+cohen.d(mydata_beg_int,"Proficiency")# (-).54 [medium effect]
+```
+
+To get the effect sizes for the rest of the contrasts, we repeat this process with the other group combinations ("Beginner" to "High" and "Int" to "High"). As we see below, there is a large effect for the difference between Beginner and High (_d_ = 1.2), and a medium effect for the difference between Int and High (_d_ = )
+
+```{r}
+#create new df with only Beginner and High
+mydata_beg_high <- mydata %>%
+  filter(Proficiency == "Beginner" | Proficiency == "High") %>%
+  select(Proficiency, Meaningfulness_AW)
+#summary(mydata_effs_BH)
+
+#create new df with only Int and High
+mydata_int_high <- mydata %>%
+  filter(Proficiency == "Int" | Proficiency == "High") %>%
+  select(Proficiency, Meaningfulness_AW)
+#summary(mydata_effs_IH)
+
+cohen.d(mydata_beg_high,"Proficiency")# (-)1.2 [large effect]
+cohen.d(mydata_int_high,"Proficiency")# .56 [medium effect]
+```
+
+### How to compare groups if we do not meet the assumptions of a one-way ANOVA?
+
+#### What to do if we violate homogeneity of variance
+If our groups are normally distributed but violate homogeneity of variance, we can compute the Welch one-way test with Games-Howell post hoc tests. Note that we would still use eta squared as our effect size, which would would generate using the code above.
+
+```{r}
+welch_model <- oneway.test(Meaningfulness_AW~Proficiency, data = mydata,var.equal = FALSE)
+print(welch_model)
+```
+```{r}
+library(userfriendlyscience)
+posthocTGH(mydata$Proficiency, y = mydata$Meaningfulness_AW)
+```
+
+
+#### What if my data isn't normally distributed?
+If our data is NOT normally distributed, there are non-parametric alternatives. One of these is the Kruskal-Wallis rank sum test:
+
+```{r}
+kruskal.test(Meaningfulness_AW~Proficiency, data = mydata)
+```
+
+One option for pairwise comparisons with the Kruskal- Wallis test is the Dunn test:
+
+```{r}
+library(FSA)
+dunnTest(Meaningfulness_AW~Proficiency, data = mydata, method = "bh")
+```
+
+

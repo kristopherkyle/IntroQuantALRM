@@ -8,11 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
-
-## Linear mixed effects models
-
-
-### Description of sample data
+## Description of sample data
 
 This data comprises L2 English essays written over a two year period by nine middle-school aged Dutch children studying at an English/Dutch bilingual school in the Netherlands. Essays were collected three times a year (roughly every four months) over two academic years. Included in the dataset are holistic scores for each essay ("Score") and mean length of T-unit (MLT) values. In this tutorial, we will explore the relationship between MLT and time spent studying English, with the alternative hypothesis that MLT scores will increase as a function of time. For further reference, see Kyle (2016). In other words, we will be attempting to determine whether (and the degree to which) Dutch EFL middle school students write more words per T-unit (a T-unit is an independent clause and all connected depedent clauses) as a function of the time they spend studying English.
 
@@ -23,7 +19,7 @@ mydata$FTime <- factor(mydata$Time)
 summary(mydata)
 ```
 
-### Visualizing the data
+## Looking at trends in the data through visualization
 
 First, we can look at the means at each time point. Overall, there appears to be a positive trend (i.e., more words per T-unit at later essay collection points), but this is not perfectly linear.
 
@@ -50,13 +46,20 @@ ggplot(data = mydata, aes(x = FTime, y = MLT, group = Participant)) +
   facet_wrap(~Participant)
 ```
 
-### Conducting an LME
+## Conducting an LME
 Linear mixed effects models allow us to account for both fixed effects (these are the variables we are most interested in, such as time spent studying English) and random effects, which are variables that may affect our results, but are not the main variables of interest. 
 
 In this tutorial, we are primarily interested in time spent studying English (Time and/or FTime). However, many researchers have highlighted the idea that individuals take varying paths on their way to proficiency, so individual variation may affect our results. This is our random effect, because we want to account for individual variation, but it isn't our primary variable of interest.
 
+### Assumptions
+Linear mixed effects (lme) models are relatively new (particularly when compared to statistics such as t-tests). They are also particularly flexible. Due to these two issues, there is not a fully accepted consensus as to the assumptions for running an lme. However, the following three assumptions, which are the same for regression models (we will talk about these next week) are as follows:
 
-#### Random intercepts
+- the relationship between the residuals (the model error for each data point) and the variable being predicted should be linear
+- the residuals should be normally distributed
+
+Note that to check residuals we will have to run our models first. So, we will (a bit paradoxically) check our assumptions AFTER running our models.
+
+### Random intercepts
 
 As noted above, our random effects are our participants (i.e., our main interest is not in intra-participant variation, but we still need to control for it). In the first model we will run, we will presume that all of our participants will follow similar trajectories, but may have different starting points (intercepts). In other words, the model will presume that participants will increase their MLT scores at approximately the same rate, but may have be at different writing proficiencies (at least with regard to MLT) at the beginning of the study. Also, first, we will run the analysis with time as a categorical variable (FTime), like we would with a repeated measures ANOVA. Then, we will run it as a continuous variable to show the difference. 
 
@@ -80,7 +83,26 @@ ranef(int_model1)
 
 Again, this is a random intercepts model, so the only changes we will see is in the intercept (i.e., starting point). All other estimates will be in relation to these revised intercepts. So, for example, at Time 1, EFL_1's estimated MLT score will be 9.6968 - 0.3623567 = 9.334443, while EFL_2's estimated MLT score will be 9.6968 + 1.2929820 = 10.98978. But remember, these are estimates created under the assumption that all participants will have the same slope (or rate of change), and we can see from looking at our plots that this estimate is decent for EFL_1, but rather poor for EFL_2.
 
-The mismatch between estimated and actual scores is reflected in the effect size of the model, which we can obtain using the "MuMIn" package.
+#### Checking assumptions
+Now that we have a model, we can check the assumption of linearity and normality.
+
+First we will test for linearity (wherein the relationship between our actual MLT values and our predicted MLT values should roughly comprise a straight line as opposed to a curved one!). As we see below, the model appears to satisfy the assumption of linearity.
+
+
+```{r}
+linearity<-plot(resid(int_model1),#extract the residuals
+                mydata$MLT) #specify original y variable
+```
+
+Now, we will check the assumption of normality (of residuals) using a qq plot. A perfectly normal distribution of residuals would be when all data points fall perfectly on the line. As we can see, we have some outliers, but the distribution is roughly normal.
+
+```{r}
+library(lattice)
+qqmath(int_model1)
+```
+
+#### Model effect size
+Now that we have checked (and at least arguably met) assumptions, we can proceed to computing effect sizes.
 
 ```{r}
 library(MuMIn)
@@ -91,7 +113,7 @@ The "MuMIN" package gives us two R^2 values. The first, R2m (marginal r-squared)
 
 The R^2m value here indicate that FTime accounts for 20.4% variance in MLT scores overall. The R^2c value indicates that participant variation + FTime together account for 35.5% of the variance in MLT scores.
 
-**Getting Pairwise Comparisons**
+#### Getting Pairwise Comparisons
 
 Below, we use the package "emmeans" to get pairwise comparisons from our model (in case we want them). The emmeans packages is very flexible, so it is probably worthwhile to read the documentation on the package. As we can see below, the only significant pairwise difference (assuming an alpha level of .05) is between Time 1 and Time 5.
 
@@ -102,7 +124,7 @@ summary(int_model1.emm)
 ```
 
 
-**Time as a Continuous Variable**
+#### Time as a Continuous Variable
 
 We can also run our analysis with Time as a continuous variable (the distance between each Time value is roughly 4-months). In this case, we will be testing whether the line of best fit is a reasonable approximation of our data. Again, at this point, we are still working with a random intercepts model.
 

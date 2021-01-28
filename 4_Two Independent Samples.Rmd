@@ -84,7 +84,7 @@ ggplot(data = mydata) +
 ```
 
 
-In addition to visualizing our data, we can run Levene's test, which is available via the car() package. The results below indicate that the two variance in Nwords across the two Prompts in our dataset are not significantly different (_p_ = .576). In other words, we very clearly meet the assumption of equal variance.
+In addition to visualizing our data, we can run Levene's test, which is available via the car() package. The results below indicate that the two variance in Nwords across the two Prompts in our dataset are not significantly different (_p_ = 0.769). In other words, we very clearly meet the assumption of equal variance.
 
 ```{r}
 library(car)

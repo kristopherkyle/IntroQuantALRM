@@ -1,0 +1,185 @@
+---
+title: "Paired Samples Difference Tests"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
+```
+
+## Paired samples difference tests
+Often in second language research, we want to know if participants' performance changes over time (perhaps in relation to a particular instructional method) using a pre-test and a post-test. Because the same individuals complete the pre-test and post-test, we do NOT meet the assumption of independence, so we cannot use an independent samples t-test. Fortunately, there are multiple methods for measuring differences in paired samples. In this tutorial, we will discuss the dependent samples t-test and the Wilcoxon signed rank test. Note that in some studies, we actually have more than two tests (e.g., a pre-test, a post-test, and a delayed post test). In such a case, we would need to use a repeated measures ANOVA or a linear-mixed effects model (these will be covered in upcoming tutorials).
+
+### Data for this tutorial
+In this tutorial, we will not be looking at a pre-post test design, but we will be looking a related data, namely essays written by the same individuals. 
+
+The data for this tutorial comprise concreteness scores, range scores, proportion of 1,000 word list words (i.e., the most frequent 1000 words in the English language), proportion of 2000 word list words (i.e., the second most frequent 1000 words in the English language), and proportion of academic word list (AWL) words for 500 L2 English essays written by L1 users of Mandarin Chinese. Each participant wrote two essays. One of these essays was written in response to a "part-time job" prompt (PTJ), and the other to a "smoking" prompt (SMK). See the [ICNALE corpus](http://language.sakura.ne.jp/icnale/) for further information about the characteristics of the learner corpus. The essays were processed using [TAALES](https://www.linguisticanalysistools.org/taales.html) and another in-house Python script to generate the index scores. For this tutorial, we will be examining the degree to which writing prompt affects the average concreteness scores of the words used in an essay. Note that (for argumentative essays) concreteness scores tend to be negatively correlated with essay quality score and judgements of lexical proficiency. In other words, argumentative essays that (on average) include less concrete words (i.e., more abstract words) tend to earn higher scores. However, it is not clear how essay prompt affects these scores. This issue is what we will be examining in this tutorial.
+
+
+``` {r}
+mydata <- read.csv("data/paired_samples_data_long.csv", header = TRUE)
+summary(mydata)
+```
+
+In order to ensure that our paired samples tests are conducted correctly, we will also order our data by participant.
+
+```{r}
+library(dplyr) #load dplyr
+mydata.2 <-arrange(mydata, Participant, Prompt) #sort by Participant, then by prompt
+head(mydata.2) #check the first few entries to make sure things are sorted correctly
+```
+
+### Visualizing the data
+One way to visualize the data is to use box plots, much like we did with our independent samples t-test. However, due to the format of our data, we will have to add each boxplot individually.
+
+```{r}
+library(ggplot2)
+ggplot(mydata.2, aes(x=Prompt,y=MRC_Concreteness_AW, color = Prompt)) +
+  geom_boxplot() +
+  geom_jitter(shape=16, position=position_jitter(0.2), color = "grey")
+```
+
+
+While this view gives us a general impression of the differences between the two prompts, it DOESN'T show us differences by individual. The following plot will be a little messy because we have 250 participants. However, most studies will have far fewer particpants (which results in a cleaner plot).
+
+```{r}
+ggplot(mydata.2, aes(x=Prompt,y=MRC_Concreteness_AW)) +
+  geom_boxplot() +
+  geom_point(aes(color = Participant), show.legend = FALSE) +
+  geom_line(aes(group = Participant, color = Participant), show.legend = FALSE)
+```
+
+Just for illustrative purposes, lets pretend that our dataset only included the first 15 participants in our larger dataset. This view lets us see that SOME participants have lower meaningfullness scores for the SMK prompt than the PTJ, but overall, essays written in response to the part time job prompt tend to have lower scores.
+
+```{r}
+mydata.3 <- mydata.2[1:30, ] #create new dataframe with the first 30 rows from mydata.2
+ggplot(mydata.3, aes(x=Prompt,y=MRC_Concreteness_AW)) +
+  geom_boxplot() +
+  geom_point(aes(color = Participant), show.legend = FALSE) +
+  geom_line(aes(group = Participant, color = Participant), show.legend = FALSE)
+```
+
+### Dependent samples T-test
+To conduct a dependent samples T-test, we first have to check for assumptions. These assumptions are almost exactly the same as for an independent samples T-test:
+
+- The observations must be independent (within each sample)
+- Each sample is normally distributed, and the variance is equal across samples
+- There is only one comparison (a repeated measures ANOVA is appropriate for multiple comparisons, stay tuned)
+- The data is continuous
+
+#### Testing the assumption of normality
+First, we can check visually for normality. Note that we will use a "group" in ggplot and will also add "facet_wrap", which allows us to see individual plots for each level of a categorical variable (in this case, prompt).
+
+```{r}
+ggplot(mydata.2, aes(x = MRC_Concreteness_AW, group = Prompt, color = Prompt))+
+  geom_histogram() +
+  facet_wrap(~Prompt)
+```
+
+We can also check this with a density plot:
+
+```{r}
+ggplot(mydata.2, aes(x = MRC_Concreteness_AW, group = Prompt, color = Prompt, fill = Prompt))+
+  geom_density(alpha = 0.4)
+```
+
+Based on the histograms and density plots, is the data normally distributed?
+
+We can also run Shapiro-Wilk tests:
+
+```{r}
+#load dplyr package, which helps us manipulate datasets:
+library(dplyr)
+
+#create a new dataframe that includes only Beginner:
+smk.ds <- mydata %>% filter(Prompt == "SMK")
+#create a new dataframe that includes only Int:
+ptj.ds <- mydata %>% filter(Prompt == "PTJ")
+
+#Test normality for MRC_Concreteness_AW in the "Smoke" essays
+shapiro.test(smk.ds$MRC_Concreteness_AW) #p = 0..8774
+
+#Test normality for MRC_Concreteness_AW in the "Part-time job" essays
+shapiro.test(ptj.ds$MRC_Concreteness_AW) #p = 0.02948
+
+```
+
+According to the Shapiro-Wilk tests, is the data normally distributed (hint, it is for one prompt but not the other).
+
+#### Testing the assumption of equal variance (homogeneity of variance)
+
+We will re-look at our boxplots below to visually inspect the degree to which our datasets have roughly equal variance:
+
+```{r}
+library(ggplot2)
+ggplot(mydata.2, aes(x=Prompt,y=MRC_Concreteness_AW, color = Prompt)) +
+  geom_boxplot()
+```
+
+According to the boxplots, how does the variance differ (and to what degree)?
+
+Now, let run Levene's test to determine whether the assumption of homogeneity of variance is violated:
+
+```{r}
+library(car)
+leveneTest(MRC_Concreteness_AW ~ Prompt, mydata) #the syntax here is variable ~ grouping variable, dataframe
+```
+
+According to Levene's test, our data meet the assumption of equal variance given an alpha level of .05 (but just barely!!! Though do note that differences test are robust to the violation of homogeneity of variance as long as the number of samples per group is roughly equal)
+
+#### Running a dependent samples t-test
+Provided that our data meets the assumptions, we can run a dependent samples t-test to determine whether there are differences in MRC_Concreteness_AW scores across the two prompts.
+
+
+```{r}
+t.test(MRC_Concreteness_AW~Prompt, paired = TRUE, data = mydata.2)
+```
+
+The results indicate that the differences between the two prompts are indeed significantly different (p = .00001636).
+
+Now, we will check the effect size using Cohen's d:
+
+```{r}
+library(psych)
+cohen.d(mydata.2,"Prompt")
+```
+
+If we look at the entry for MRC_Concreteness, we see that our effect size (d = .32) represents a small effect.
+
+### Paired samples Wilcoxon signed rank test
+If our data do not meet the assumptions of the paired samples T-test, we can use the paired samples Wilcoxon signed rank test.
+
+This test is easy to compute in R:
+
+```{r}
+wilcox.test(MRC_Concreteness_AW~Prompt, paired = TRUE, data = mydata.2)
+```
+
+Based on this test, we see that MRC_Concreteness_AW values different significantly between the two prompts (p = .0000104).
+
+We then compute the effect size:
+
+```{r}
+library(rcompanion) #don't forget to install if you haven't already
+wilcoxonR(mydata.2$MRC_Concreteness_AW,mydata.2$Prompt)
+```
+
+Our effect size is small (r = .161), according to Cohen's (1988) guidelines for r.
+
+### Sign test
+Another alternative is the Sign test. This takes a little more work to run in R, but is still fairly simple.
+
+```{r}
+#create filtered versions of each variable
+concreteness.smk = mydata.2$MRC_Concreteness_AW [mydata.2$Prompt == "SMK"] 
+concreteness.ptj = mydata.2$MRC_Concreteness_AW [mydata.2$Prompt == "PTJ"]
+#load library
+library(BSDA)
+#run sign test
+SIGN.test(x = concreteness.smk, y = concreteness.ptj, alternative = "two.sided", conf.level = 0.95)
+```
+
+As we see, the Sign test also indicates that there is a significant difference in concreteness scores across the two prompts (p = .0001061).
+
+### Follow up
+Based on the results of our study, is there a significant difference in concreteness scores across the two prompts? If so, which prompt resulted in higher concreteness scores? Why do you think this might be? If there are significant differences, can we say that the difference is meaningful? What evidence do we have (and/or not have! for/against this idea)?

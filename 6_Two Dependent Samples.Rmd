@@ -1,5 +1,7 @@
 ---
 title: "Paired Samples Difference Tests"
+author: "Kristopher Kyle"
+date: "(updated 1/28/2021)"
 output: html_document
 ---
 

@@ -7,3 +7,4 @@
 ### [Tutorial 6: Differences between Two Dependent Samples](6_Two-Dependent-Samples.html)
 ### [Tutorial 7: Differences between Three or more Dependent Samples (abbreviated)](7_Repeated_Measures_ANOVA.html)
 ### [Tutorial 8: Time Series Data with Linear Mixed Effects Models (LMEs)](8_Linear_Mixed_Effects_Models.html)
+### [Tutorial 9: Correlations](9_Correlations.html)

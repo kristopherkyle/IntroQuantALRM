@@ -1,0 +1,135 @@
+---
+title: "Correlation"
+output: html_document
+author: "Kristopher Kyle"
+date: "(updated 2/1/2021)"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
+```
+
+## Correlation: Examining the relationship between variables
+
+### The basics
+A correlation is a measure that indicates the degree to which the values of one variable change with respect to another variable. For example, we might examine the relationship between the temperature and the number of students wearing a sweatshirt/jacket on campus. In second language learning, we might look at the relationship between the number of hours a student spends studying and their scores on a proficiency test. For most of this tutorial, we will be looking at a common type of correlational analysis (Pearson's product-moment correlation), though the calculation of other correlation coefficients will be briefly discussed at the end.
+
+Importantly, correlation values (hereafter referred to as _r_) are an effect size that range from -1.0 to 1.0. When we interpret the **size** of a correlation, we are concerned with the absolute value of the number, not the directionality. For example, an _r_ value of -.700 is bigger than an _r_ value of .300. 
+
+The sign of the _r_ value tells us whether the values from variable A increase as the values of variable B increase (resulting in a positive sign) OR if the variable A values decrease as the variable B values increase (a negative sign). For example, we would expect a NEGATIVE correlation between temperature and number of students wearing jackets on campus (as one value goes down [temperature] the other goes up [number of jacket-wearing individuals] and vice versa). On the other hand, we would expect a POSITIVE relationship between the number of hours spent studying a language and their scores on a language proficiency test (as one value goes up [time spent studying] the other also goes up [proficiency scores] and vice versa).
+
+Finally, _p_ values are also calculated for correlation analyses. These values tell us the probability that observed relationship between the variables would be observed if there were actually no relationship between them.
+
+### Assumptions
+Pearson's correlation has the following assumptions:
+
+- The variables must be continuous (see other tests for ordinal or categorical data)
+
+- The variables must have a linear relationship (i.e., do not have a curvilinear or other relationship)
+
+- There are no outliers (or there are only minimal outliers in large samples)
+
+- The variables must have a bivariate normal distribution (note that this is conceptually related to, but different from the normal distributions that we have been discussing so far)
+
+
+### Checking assumptions
+In our first example, we will examine the relationship between  between number of words (as a proxy for proficiency) and lexical sophistication (measured as word frequency) in a corpus of argumentative essays written as part of a standardized test of English proficiency.
+
+These variables (and a few others) are included in the "correlation_sample.csv" file included on our Canvas page.
+
+``` {r}
+library(ggplot2) #load ggplot2
+cor_data <- read.csv("data/correlation_sample.csv", header = TRUE) #read the spreadsheet "correlation_sample.csv" into r as a dataframe
+summary(cor_data) #get descriptive statistics for the dataset
+```
+
+#### Assumption 1: Continuous or ratio data
+Our data for each variable is continuous (it is not, for example, categorical), so we can continue with our analysis.
+
+#### Assumption 2: Linearity
+To check the linearity of our data, we will create a scatterplot. For our data to meet the criteria of linearity, it will need to fall in roughly a straight line (and not one that is curvilinear). 
+
+The blue line below represents the (straight) line of best fit for the data, while the red line represents a line of best fit based on a moving average. In order to meet the assumption of linearity, we want the red line to approximate the blue line. In this case, we can make a pretty strong argument that we meet the assumption of linearity.
+
+```{r}
+ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
+  geom_point() +
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+
+
+```
+
+
+#### Assumption 3: Minimal outliers
+Outliers can strongly affect our correlation coefficents (particularly in small datasets). Because our dataset is fairly large (480 participants), having a few outliers will not be a large problem. To check for outliers, lets take a look at the scatterplot again.
+
+```{r}
+ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
+  geom_point() +
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+It appears as though we only have a few outliers (and one particularly extreme one in the bottom right section of the plot.) Based on the size of the data, there don't seem to be any large issues to be worried about. If we look at the red line, we can actually see the effect of the outliers (e.g., the slight dip in the line at 200 words, the slight rise in the line at around 350 words, and the slight dip in the line around 500 words). However, because these perturbations in the line are rather small, we can conclude that they are not causing large issues.
+
+#### Assumption 4: Normality
+Next, we will check the assumption of bivariate normality for our variables using two-dimensional density plots. We can look a the plot in a similar way that we would look at a contour map. In this case, the lighter colored regions have higher density (think altitude) than the darker shaded regions. A perfect bivariate distribution would look like a 3-dimensional normal distribution curve. What we have below roughly follows this shape: The most dense regions are in the middle of the plot. The countours of our "mountain" are not perfectly symmetrical (we see some ridges and valleys leading from the summit), but they are reasonably symmetrical. Thus, our visual inspection indicates that we have a roughly normal bivariate distribution.
+
+```{r}
+ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
+  stat_density_2d(aes(fill = ..level..), geom = "polygon")
+```
+
+We can also check this using a statistical test. As we see below, our distribution does not significantly deviate from a normal distribution with regard to skewness (symmetry of the distribution; p = 0.210), but it does significantly deviate from a normal distribution with regard to kurtosis (height/width of the distribution; p = 0.00000000199). So, our data is not perfectly normal. We can either proceed with a Pearson correlation (on the basis of our visual inspection/skewness) of we can use a nonparametric test. Note that the _r_ value will still be valid if we run a Pearson test, but we may have to question the _p_ value.
+
+```{r}
+library(dplyr)
+library(QuantPsyc)
+
+cor_data.small <- cor_data %>% dplyr::select(nwords,frequency_CW)
+
+mult.norm(cor_data.small)$mult.test
+```
+
+
+### Calculating Pearson's _r_ 
+Now, we will actually calculate the correlation between number of words (nwords) and content word frequency (frequency_CW) using the cor.test function, which will give us an _r_ value and a _p_ value.
+
+```{r}
+cor.test(cor_data$nwords,cor_data$frequency_CW)
+```
+
+#### Interpreting the _p_ value
+In this case, the results indicate a significant relationship between number of words (nwords) and content word frequency (frequency_CW): _p_ = 7.201e-06, which translates to .000007201. In other words, there is a .0007% chance that we would observe this data if there were no relationship between number of words and content word frequency.
+
+#### Interpreting the effect size (_r_)
+The correlation value (which is indicated above as "cor"; _r_ = -.203) indicates that a) there is an inverse relationship between number of words and content word frequency, and b) this relationship is fairly weak (Cohen, 1988 suggests that small/weak correlations range from .100 to .299).
+
+Below are the full guidelines from Cohen (1988):
+
+Small: .100 - .299
+Medium: .300 - .599
+Large: .600 - 1.000
+
+Note that Plonsky & Oswald (2014) suggest the following guidelines for applied linguistics research:
+
+Small: .250 - .399
+Medium: .400 - .599
+Large: .600 - 1.000
+
+
+### Other correlation tests
+If your variables do not meet the assumptions of the Pearson product moment correlation, all is not lost! The following correlation coefficents can also be calculated.
+
+#### Ordinal data: Spearman's Rho and Kendall's Tau
+If your data violates the assumptions of bivariate normality, includes interval variables (and/or continous ones), or has a curvilinear relationship (but that still generally follows an upward or downward trend), you can use Spearman's Rho or Kendall's Tau. If you have a lot of data points with the same score, Kendall's Tau is preferred.
+
+Below, we will repeat our analyses above, but this time with the two parametric tests.
+
+```{r}
+cor.test(cor_data$nwords,cor_data$frequency_CW,method = ("spearman"))
+cor.test(cor_data$nwords,cor_data$frequency_CW,method = ("kendall"))
+```
+
+The results from both tests indicate a significant relationship. Further, both tests indicate that the relationship between Score and content word frequency is negative. The Spearman Rho value (-.152) indicates a small/weak effect (according to Cohen, 1988). The Kendall Tau value (-.101) is more conservative and indicates a small/weak effect (according to Cohen, 1988).

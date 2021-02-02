@@ -108,22 +108,26 @@ The correlation value (which is indicated above as "cor"; _r_ = -.203) indicates
 
 Below are the full guidelines from Cohen (1988):
 
-Small: .100 - .299
-Medium: .300 - .599
-Large: .600 - 1.000
+- Small: .100 - .299
+
+- Medium: .300 - .599
+
+- Large: .600 - 1.000
 
 Note that Plonsky & Oswald (2014) suggest the following guidelines for applied linguistics research:
 
-Small: .250 - .399
-Medium: .400 - .599
-Large: .600 - 1.000
+- Small: .250 - .399
+
+- Medium: .400 - .599
+
+- Large: .600 - 1.000
 
 
 ### Other correlation tests
 If your variables do not meet the assumptions of the Pearson product moment correlation, all is not lost! The following correlation coefficents can also be calculated.
 
 #### Ordinal data: Spearman's Rho and Kendall's Tau
-If your data violates the assumptions of bivariate normality, includes interval variables (and/or continous ones), or has a curvilinear relationship (but that still generally follows an upward or downward trend), you can use Spearman's Rho or Kendall's Tau. If you have a lot of data points with the same score, Kendall's Tau is preferred.
+If your data violates the assumptions of bivariate normality, includes ordinal variables (and/or continous ones), or has a curvilinear relationship (but that still generally follows an upward or downward trend), you can use Spearman's Rho or Kendall's Tau. If you have a lot of data points with the same score, Kendall's Tau is preferred.
 
 Below, we will repeat our analyses above, but this time with the two parametric tests.
 

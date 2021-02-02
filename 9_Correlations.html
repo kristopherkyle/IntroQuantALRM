@@ -375,7 +375,7 @@ summary {
 <div id="the-basics" class="section level3">
 <h3>The basics</h3>
 <p>A correlation is a measure that indicates the degree to which the values of one variable change with respect to another variable. For example, we might examine the relationship between the temperature and the number of students wearing a sweatshirt/jacket on campus. In second language learning, we might look at the relationship between the number of hours a student spends studying and their scores on a proficiency test. For most of this tutorial, we will be looking at a common type of correlational analysis (Pearson’s product-moment correlation), though the calculation of other correlation coefficients will be briefly discussed at the end.</p>
-<p>Importantly, correlation values (hereafter referred to as <em>r</em>) are an effect size that range from -1.0 to 1.0. When we interpret the size of a correlation, we are concerned with the absolute value of the number, not the directionality. For example, an <em>r</em> value of -.700 is bigger than an <em>r</em> value of .300.</p>
+<p>Importantly, correlation values (hereafter referred to as <em>r</em>) are an effect size that range from -1.0 to 1.0. When we interpret the <strong>size</strong> of a correlation, we are concerned with the absolute value of the number, not the directionality. For example, an <em>r</em> value of -.700 is bigger than an <em>r</em> value of .300.</p>
 <p>The sign of the <em>r</em> value tells us whether the values from variable A increase as the values of variable B increase (resulting in a positive sign) OR if the variable A values decrease as the variable B values increase (a negative sign). For example, we would expect a NEGATIVE correlation between temperature and number of students wearing jackets on campus (as one value goes down [temperature] the other goes up [number of jacket-wearing individuals] and vice versa). On the other hand, we would expect a POSITIVE relationship between the number of hours spent studying a language and their scores on a language proficiency test (as one value goes up [time spent studying] the other also goes up [proficiency scores] and vice versa).</p>
 <p>Finally, <em>p</em> values are also calculated for correlation analyses. These values tell us the probability that observed relationship between the variables would be observed if there were actually no relationship between them.</p>
 </div>
@@ -475,9 +475,17 @@ mult.norm(cor_data.small)$mult.test</code></pre>
 <h4>Interpreting the effect size (<em>r</em>)</h4>
 <p>The correlation value (which is indicated above as “cor”; <em>r</em> = -.203) indicates that a) there is an inverse relationship between number of words and content word frequency, and b) this relationship is fairly weak (Cohen, 1988 suggests that small/weak correlations range from .100 to .299).</p>
 <p>Below are the full guidelines from Cohen (1988):</p>
-<p>Small: .100 - .299 Medium: .300 - .599 Large: .600 - 1.000</p>
+<ul>
+<li><p>Small: .100 - .299</p></li>
+<li><p>Medium: .300 - .599</p></li>
+<li><p>Large: .600 - 1.000</p></li>
+</ul>
 <p>Note that Plonsky &amp; Oswald (2014) suggest the following guidelines for applied linguistics research:</p>
-<p>Small: .250 - .399 Medium: .400 - .599 Large: .600 - 1.000</p>
+<ul>
+<li><p>Small: .250 - .399</p></li>
+<li><p>Medium: .400 - .599</p></li>
+<li><p>Large: .600 - 1.000</p></li>
+</ul>
 </div>
 </div>
 <div id="other-correlation-tests" class="section level3">
@@ -485,7 +493,7 @@ mult.norm(cor_data.small)$mult.test</code></pre>
 <p>If your variables do not meet the assumptions of the Pearson product moment correlation, all is not lost! The following correlation coefficents can also be calculated.</p>
 <div id="ordinal-data-spearmans-rho-and-kendalls-tau" class="section level4">
 <h4>Ordinal data: Spearman’s Rho and Kendall’s Tau</h4>
-<p>If your data violates the assumptions of bivariate normality, includes interval variables (and/or continous ones), or has a curvilinear relationship (but that still generally follows an upward or downward trend), you can use Spearman’s Rho or Kendall’s Tau. If you have a lot of data points with the same score, Kendall’s Tau is preferred.</p>
+<p>If your data violates the assumptions of bivariate normality, includes ordinal variables (and/or continous ones), or has a curvilinear relationship (but that still generally follows an upward or downward trend), you can use Spearman’s Rho or Kendall’s Tau. If you have a lot of data points with the same score, Kendall’s Tau is preferred.</p>
 <p>Below, we will repeat our analyses above, but this time with the two parametric tests.</p>
 <pre class="r"><code>cor.test(cor_data$nwords,cor_data$frequency_CW,method = (&quot;spearman&quot;))</code></pre>
 <pre><code>## 

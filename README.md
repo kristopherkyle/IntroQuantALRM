@@ -9,3 +9,4 @@
 ### [Tutorial 8: Time Series Data with Linear Mixed Effects Models (LMEs)](8_Linear_Mixed_Effects_Models.html)
 ### [Tutorial 9: Correlations](9_Correlations.html)
 ### [Tutorial 10: Simple Regression](10_Simple_Regression.html)
+### [Tutorial 11: Multiple Regression](11_Multiple_Regression.html)

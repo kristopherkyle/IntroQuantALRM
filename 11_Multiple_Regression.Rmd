@@ -1,0 +1,228 @@
+---
+title: "Multiple Regression"
+author: "Kristopher Kyle"
+date: "Updated 2-9-2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
+```
+
+## Multiple Regresion: Using multiple independent variables to predict dependent variable values
+
+Often, particular constructs (such as linguistic proficiency) are multifaceted and are best measured using multiple measures. In such cases, we can use multiple regression to predict a dependent variable (such as linguistic proficiency) using multiple independent variables (such as features of lexical sophistication and syntactic complexity). This tutorial builds on the previous two tutorials on [Correlation](https://kristopherkyle.github.io/IntroQuantALRM/9_Correlations.html) and [Linear Regression](https://kristopherkyle.github.io/IntroQuantALRM/10_Simple_Regression.html), so be sure to check those out. In this tutorial, we are going to predict holistic writing quality scores (Score) using a number of linguistic features related to frequency and an index of syntactic complexity (mean length of clause).
+
+### Assumptions
+The assumptions for multiple regression are very similar to those of Pearson correlations and (single) linear regression. We do, however, add one important assumption: (non) multicollinearity.
+
+The main assumptions of (single) linear regression are:
+
+- The variables must be continuous (see other tests for ordinal or categorical data)
+
+- The variables must have a linear relationship with the dependent variable
+
+- There are no outliers (or there are only minimal outliers in large samples)
+
+- The residuals must be normally distributed
+
+- The predictor variables are not strongly correlated with each other (this is referred to as multicollinearity)
+
+#### Assumptions 1-3: The variables must be continuous, there must be a linear relationship between each independent (predictor) variable and the dependent variable, and there are no (minimal) outliers.
+
+First, we will load our data, then we will make a series of scatterplots. Note that "Score" represents holistic writing quality scores that range from 1-5 in .5 point increments. For the purposes of this tutorial, we will consider "Score" to be a continuous variable. Also note that we will use geom_jitter() instead of geom_point() to help us visualize the linearity.
+
+``` {r}
+mr_data <- read.csv("data/multiple_regression_sample.csv", header = TRUE)
+summary(mr_data)
+```
+
+**Frequency_AW**
+
+```{r}
+library(ggplot2)
+ggplot(mr_data, aes(x = frequency_AW , y=Score )) +
+  geom_jitter() + 
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+**Frequency_CW**
+
+```{r}
+ggplot(mr_data, aes(x = frequency_CW , y=Score )) +
+  geom_jitter() + 
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+**Frequency_FW**
+
+```{r}
+ggplot(mr_data, aes(x = frequency_FW , y=Score )) +
+  geom_jitter() + 
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+**bigram_frequency**
+
+```{r}
+ggplot(mr_data, aes(x = bigram_frequency , y=Score )) +
+  geom_jitter() + 
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+**MLC**
+
+```{r}
+ggplot(mr_data, aes(x = MLC , y=Score )) +
+  geom_jitter() + 
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+For the purposes of this tutorial, we will suggest that our data roughly meet Assumptions 1-3, though we might argue for a few violations (e.g., there seem to be outliers in the MLC scatterplot).
+
+#### Assumption 4: The residuals must be normally distributed
+We will check this assumption with QQ plots after our model is created.
+
+#### Assumption 5: The predictor variables are not strongly correlated with each other (multicollinearity)
+If our independent predictor variables are strongly related, we are likely to overfit the data, causing the model to overestimate the explained variance.
+
+In order to check for multicollinearity, we need to check the correlations between each of our variables. We can do this by running a series of cor.test() analyses, but it is easier to make a correlation matrix (see below). 
+
+To create the correlation matrix, we simple use the cor() function with our dataframe as the argument:
+
+``` {r}
+cor(mr_data)
+```
+
+There are many thresholds for multicollinearity that can be used, but a common number is |.700|. (Note that studies have used both lower and higher thresholds than this.) To check for multicollinearity, we need to check our correlation matrix for any two indices that exceed a correlation value of |.700|. If any two indices exceed our collinearity threshold, we have to choose which to keep and which to discard. Generally speaking, we will keep whichever index has the strongest relationship with our dependent variable (in this case, Score).
+
+In these data, we see that frequency_CW and frequency_AW are strongly correlated ( _r_ = 0.722 ), so we have to choose which one to keep. If we look at the first column, we see that frequency_CW has a stronger relationship with Score ( _r_ = -0.325) than frequency_AW ( _r_ = -0.211), so we will discard frequency_AW and retain frequency_CW.
+
+In the correlation matrix, we also see that bigram_frequency is not meaningfully related to Score ( _r_ = .004), so we have no reason to believe that it will be useful in our model. Accordingly, we will not include it.
+
+### Conducting a multiple regression
+
+After checking for all of the assumptions, it is time to run our data. Again, R makes this very easy. We will use the lm() function, which is the same function we used for single linear regression. In this case, however, we will be adding multiple predictor variables (frequency_CW, MLC, and frequency_FW). Note that for a "normal" multiple regression, the order of the predictors matters. Each variable will be added to the model sequentially. We can often sequence variables based on theoretical parameters. In this case, we have none, so they are entered in order of the strength of their relationship with Score.
+
+```{r}
+#define model2 as a regression model using frequency_CW, MLC, and frequency_FW to predict nwords
+model1 <- lm(Score ~ frequency_CW + MLC + frequency_FW, data = mr_data)
+summary(model1)
+```
+
+#### Interpreting and refining the model
+
+The summary() output indicates that 12.3% of the variance in essay scores can be explained by the model (r-squared = .1233, adjusted r-squared = .1178) using three variables. However, our Coefficients table also indicates that MLC does not significantly improve the model (there is only a 57.7% chance that adding MLC changes the model). In this case, we can choose to respecify the model without MLC, which will simplify our model (and may make it more accurate). We do this in model2 below.
+
+```{r}
+#define model2 as a regression model using frequency_CW, MLC, and frequency_FW to predict nwords
+model2 <- lm(Score ~ frequency_CW + frequency_FW, data = mr_data)
+summary(model2)
+```
+
+As we can see, removing MLC actually improved our model performance slightly, both in terms of r-squared values and adjusted r-squared values.
+
+To predict Score, we can use the following formula: Score = (frequency_CW \* -2.4295) + (frequency_FW \* 1.0631) + 5.8934
+
+### Plotting our results
+In order to plot our results, we have to add the scores predicted by the model to our dataframe. This is demonstrated below.
+
+```{r}
+#To add a column to our dataframe, we just define it
+mr_data$pred_Score <- predict(model2)
+#We can use summary() to make sure it worked correctly
+summary(mr_data)
+```
+
+Now, we can easily plot the relationship between Score and the values predicted by the model (pred_Score). As we can see, our model includes quite a lot of error!
+
+```{r}
+library(ggplot2)
+ggplot(mr_data, aes(y=pred_Score, x = Score)) +
+  geom_jitter() +
+  geom_smooth(method="lm")
+```
+
+#### Checking the assumption of normality (of the residuals)
+
+A perfectly normal distribution of residuals would be when all data points fall perfectly on the line. As we can see, we have some outliers (particularly on the right side of the graph), but the distribution is roughly normal.
+
+```{r}
+library(car)
+qqPlot(model2)
+```
+
+### Stepwise models
+If we have no theoretical basis for presuming a particular order of importance for our variables, we can use a stepwise model to automatically select the optimal number and order of variables. Note that this is common in educational data mining and other related fields, but is sometimes controversial. Basically, it is important to only include variables that you have a good reason to believe (e.g., theoretically or based on previous evidence) are appropriate predictors of the dependent variable.
+
+Below, we will conduct a stepwise regression using the MASS package (don't forget to install it!). Note that the first argument of stepAIC() is a model (e.g., lm(Score ~ frequency_CW + MLC + frequency_FW, data = mr_data)). Here, we are using our first model (model1).
+
+```{r}
+library(MASS)
+stepwise_model <- stepAIC(model1, direction="both")
+summary(stepwise_model)
+```
+
+As we see, the stepwise model dropped MLC, just like we did, and ended up with the same model as we saw in model2.
+
+### Further directions
+When predicting scores, it is often important to ensure that our model is generalizable beyond the current dataset. This can be accomplished using training and test sets and/or through cross-validation.
+
+#### Training and test sets
+This procedure involves randomly dividing a datset into two pieces (often via a 2/3rds, 1/3rd split). First, a model is created using the larger set, then tested on new data (the smaller set). See below for an example.
+
+Note that this uses the *caret* package, so don't forget to install it.
+
+```{r}
+library(caret)
+set.seed(1) #do this to ensure reproducibility - otherwise you will get slightly different results each time
+#create random sample based on Score values, training set will be 67% of data
+trainIndex = createDataPartition(mr_data$Score, p = .67, list = FALSE, times = 1)
+#define training data
+mr_dataTrain <- mr_data[trainIndex,]
+#define test data
+mr_dataTest <- mr_data[-trainIndex,]
+#create model using test data:
+train_model <- lm(Score ~ frequency_CW + frequency_FW, data = mr_dataTrain)
+#get training set results
+summary(train_model)
+```
+
+Using the smaller dataset for training, we see that the model is slightly less predictive than our original model2 (which used the whole dataset).
+
+Now, we can apply this model to the test set, and evaluate its performance.
+
+```{r}
+#predict scores in test data and save results as the variable "test_pred"
+mr_dataTest$test_pred <- predict(train_model,mr_dataTest)
+#determine the relationship between the actual and predicted scores in the test data
+cor.test(mr_dataTest$Score,mr_dataTest$test_pred)
+#get R-squared value
+cor(mr_dataTest$Score,mr_dataTest$test_pred)^2
+```
+
+As we see from the results, the model from the training data actually worked better (r-squared = .130) on the test set than the training set (r-squared = .112)! This provides some evidence that our model can be generalized to new (but similar) datasets.
+
+#### Cross-validation
+Cross-validation involves using multiple training and test sets, then averaging the model performance across all test sets. Commonly, the data is divided into ten segments (though this can vary widely!). In the case of ten segments, the data from 9 segments is used to train the model, which is then tested on the tenth segment. This process is repeated until all segments have been used as the test set, and which time the results from each test set are averaged. Cross-validation is popular because it allows for larger training sets (and avoids some of the pitfalls of random selection).
+
+
+```{r}
+library(caret)
+set.seed(1) #do this to ensure reproducibility - otherwise you will get slightly different results each time
+#create cross-validation parameters
+TenFoldCV <- trainControl(method = "repeatedcv", number = 10,repeats = 10)
+#assign formula from stepwise model (this was the model defined earlier)
+step_mod<-formula(stepwise_model)
+#create cross-validated model
+mTenFold<-train(step_mod,data=mr_data,method='lm',trControl=TenFoldCV)
+#get results
+mTenFold$results
+```
+
+Here, we are most interested in the Rsquared value, which indicates that the model explained 13.7% of the variance in Score (Rsquared = 0.137). This is not markedly different from the full set model, which indicates that our original model was stable across the dataset. 

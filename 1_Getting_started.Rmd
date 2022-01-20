@@ -1,17 +1,36 @@
 ---
 title: "Getting Started with R and RStudio"
-output: html_document
+author: "Kristopher Kyle"
+date: "2019-02-04; revised 2022-01-20"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
-[Head back to tutorial homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 
 
-## Introduction to R
-### Downloading and installing R and Rstudio
-The first step is to download and install R, which is freely available and can be accessed [here](https://cran.r-project.org/mirrors.html). You can choose any of the "mirrors" you want, but it is best to use the one that is closest to you geographically (i.e., the one at [Oregon State University](https://ftp.osuosl.org/pub/cran/)).
+# Introduction to R
 
-The second step is to download and install [Rstudio](https://rstudio.com/products/rstudio/), which is a very nice integrated development environment (IDE) for R. In a nutshell, it makes working with R much easier. You will want to install the Rstudio Desktop version that is appropriate for your operating system. After you have installed R and Rstudio, you can procede to the next step.
+## Tutorial objectives
+**The objectives of this tutorial are to:**
 
-### Getting started with R
+- Download and install R
+- Download and install RStudio
+- Learn the basics of R including:
+  - basic mathmatical functions
+  - variable assignment
+  - installing packages
+  - loading packages
+- Be introduced to data visualization
+
+## Downloading and installing R 
+The first step is to download and install R, which is freely available and can be accessed [here](https://cran.r-project.org/mirrors.html). You can choose any of the "mirrors" you want, but it is best to use the one that is closest to you geographically (e.g., the one at [Oregon State University](https://ftp.osuosl.org/pub/cran/)).
+
+## Downloading and installing RStudio
+The second step is to download and install [Rstudio](https://rstudio.com/products/rstudio/), which is a very nice integrated development environment (IDE) for R. In a nutshell, it makes working with R much easier. You will want to install the Rstudio Desktop version that is appropriate for your operating system. After you have installed R and Rstudio, you can proceed to the next step.
+
+## Getting started with R
 R is a programming language that was developed to help researchers analyze quantitative data (e.g., do statistics).
 As such, R can be used for conducting both simple mathematical functions and complex statistical analyses. See below for some of the simple things that you can do with R. Note that any code directly preceded with a "#" is ignored by R.
 
@@ -19,28 +38,34 @@ As such, R can be used for conducting both simple mathematical functions and com
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+### addition:
 ```{r}
-# addition
 1+2
 ```
+
+### multiplication:
 ```{r}
-#multiplication
 5*4
 ```
+
+### division:
 ```{r}
-#division
 18/32
 ```
+
+### power calculations:
 ```{r}
-#power calculations
 5^2
 ```
+
+### square root calculations:
 ```{r}
-#Square root
 sqrt(25)
 ```
+
 In short, you can use R as a calculator if you wish.
-### Assigning variables
+
+## Assigning variables
 We can also save values (or other objects) by assigning them to an arbitrary variable. We do this using "<-".
 ```{r}
 VarName1 <- 5^2
@@ -52,7 +77,7 @@ print(VarName1) #display the value using the "print" function
 ```{r}
 VarName1 - 5
 ```
-### Loading and installing packages
+## Loading and installing packages
 R comes loaded with a large number of helpful packages and datasets. To access these datasets, we use the function library() which takes a package name as an argument.
 ```{r}
 library("psych")
@@ -74,7 +99,7 @@ help(psych)
 </center>
 
 
-### Playing with some data in R
+## Playing with some data in R
 R comes with a number of datasets pre-installed. Later on, we will load our own datasets, but for now, lets play with one that comes with R, called "mtcars". First, lets see what kind of data mtcars comprises. We can do this using the help() function.
 ```{r}
 help(mtcars)
@@ -94,8 +119,8 @@ plot(mtcars$mpg,mtcars$hp)
 
 This plot seems to show a negative relationship between a car's horsepower and its fuel efficiency (MPG), which is likely what we would expect.
 
-### Installing and testing ggplot2
-One particularly useful package that we will be using a lot this semester is ggplot. The appropriate command for installing ggplot2 is included below.
+## Installing and testing ggplot2
+One particularly useful package that we will be using a lot this term is ggplot. The appropriate command for installing ggplot2 is included below.
 ```{r,eval=FALSE}
 install.packages("ggplot2")
 ```
@@ -109,5 +134,5 @@ ggplot(data = mtcars, aes(mpg,hp)) +
   geom_smooth(method = lm)
 ```
 
-### The end (for now)
+## The end (for now)
 This is the end of our introduction to R for now. More will follow in upcoming classes.

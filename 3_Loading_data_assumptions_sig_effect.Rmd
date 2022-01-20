@@ -1,21 +1,42 @@
 ---
 title: "Loading data, more visualization, assumptions, significance, effect size"
 author: "Kristopher Kyle"
-date: "2/4/2019; revised 1/8/2021"
-output: 
+date: "2019-02-04; revised 2022-01-20"
+output:
   html_document:
-    code_folding: hide
+    toc: true
+    toc_float: true
+
+    
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-[Head back to tutorial homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 
+# Loading data, more visualization, assumptions, significance, effect size
+## Tutorial Objectives
+**The objectives of this tutorial are to:**
 
-## Part I: Loading data, more practice with visualizing data
+- Load data into R from a .csv file
+- Continue to build proficiency with creating (and interpreting) data visualizations
+  - scatterplots
+  - boxplots
+- Be introduced to some important terms and concepts in statistical analysis:
+  - mean 
+  - median 
+  - mode 
+  - variance 
+  - standard deviation
+  - normal distribution
+  - probability 
+  - statistical significance
+  - effect size
 
-### Loading data
+# Part I: Loading data, more practice with visualizing data
+
+## Loading data
 In previous tutorials, we have used dataframes that are part of the R base package or are part of ggplot2. Here, we will load data from a spreadsheet that is formatted as a comma separated values (.csv) document.
 
 Our first step will be to open a new R script and save it in a convenient location (e.g., in a folder named "Rday3" on your desktop).
@@ -40,7 +61,7 @@ These variable names represent the following:
 - Proficiency_CEFR: Categorical proficiency rating based on the Common European Framework of Reference for Languges (CEFR)
 - Proficiency_Number: CEFR rating converted to a numerical scale (ranging from 1 to 4)
 
-### Visualizing the data
+## Visualizing the data
 
 Lets apply what we learned in the last tutorial to this new data. Don't forget to load ggplot2!
 
@@ -48,7 +69,7 @@ Lets apply what we learned in the last tutorial to this new data. Don't forget t
 library(ggplot2)
 ```
 
-#### Scatterplots
+### Scatterplots
 First, lets create a scatterplot with a line of best fit to examine the relationship between VST (y-axis) and Proficiency_Number (x-axis). **What does the scatterplot indicate about the relationship between VST scores and Proficiency?**
 
 ```{r}
@@ -74,7 +95,7 @@ ggplot(data = fundata) + #this line indicates my dataset
   facet_wrap(~ Nationality, ncol = 3)
 ```
 
-#### Boxplots
+### Boxplots
 
 Now, lets treat proficiency as a categorical variable. Create a graph with boxplots that shows the range of VST scores (y-axis) by Proficiency_CEFR (x-axis).
 
@@ -91,19 +112,43 @@ ggplot(data = fundata) +
   geom_jitter(mapping = aes(x = Proficiency_CEFR, y = VST, color = Nationality), width = 0.2)
 ```
 
-## Part II: Assumptions, significance, and effect size
+# Part II: Assumptions, significance, and effect size
 
-### Some preliminary concepts in statistics
+In this section, R code is provided to help demonstrate concepts, but don't worry about the code. The main purpose of this section is to introduce the concepts (not the code). We will revisit some of the code in later tutorials as applicable.
 
-### Mean, median, and mode
+## Some preliminary concepts in statistics
 
-__mean__ The mean is what the general population refers to as the "average" score. To get the mean, we divide the number of observed values by the number of observations.
+## Mean, median, and mode
 
-__median__ The median is the middle observed values (when all values are arranged in ascending/descending order).
+To demonstrate the concepts of mean, median, and mode, we will create a short list of numbers:
+
+```{r}
+samplelist <- c(1,1,2,3,4,4,5,5,6,6,7,7,7)
+```
+
+__mean__ The mean is what the general population refers to as the "average" score. 
+
+To get the mean, we divide the sum of the observed values by the number of observations. In R, we can use the "mean()" function to calculate the mean score. As we see below, the mean value of our sample list is 4.461538.
+
+```{r}
+mean(samplelist)
+```
+
+__median__ The median is the middle observed values (when all values are arranged in ascending/descending order). 
+
+Our sample list is sorted in ascending order and includes 13 items. The middle observed value (the 7th value) is 5. In R we can use the "median()" function to calculate the median score.
+
+```{r}
+median(samplelist)
+```
+
 
 __mode__ The mode is the observed value that occurs most often.
 
-### Variance and standard deviation
+To get the mode, we can simply count the frequency of each item in the list. The most frequent item is the mode. In our sample list, 7 occurs more than any other number (in this case, 3 times) and is therefore the mode. Base R does not have a function to calculate the mode (though there are packages that can be used for this purpose). Because we won't need to calculate the mode for any analyses this term, we won't worry about this too much.
+
+## Variance and standard deviation
+The definitions below may seem a bit technical. If that is the case, don't worry to much. We will discuss these (particularly standard deviation) in class.
 
 __population variance__ The variance in a set of observed values indicate how these values are distributed. To calculate the variance, we first subtract the mean from each of our observed values and square each of these values. We then calculate the mean for the squared values.
 
@@ -113,21 +158,24 @@ __sample variance__ When we calculate the variance for a sample, we need to acco
 
 __sample standard deviation__ The sample standard deviation is simply the square root of the sample variance.
 
-#### Calcuating descriptive statistics in R
+### Calcuating descriptive statistics in R
+
+Below, we will load our sample data, which comes from the ICNALE corpus. In this case, we will be looking specifically at Vocabulary Size Test (VST) scores. Then, we will look at some descriptive statistics related to VST scores in the dataset, including the mean, median, variance, and standard deviation.
 
 ```{r}
 fundata <- read.csv("data/ICNALE_500_simple.csv", header = TRUE) #load data
-mean(fundata$VST) #mean VST score
-median(fundata$VST) #median VST score
-mode(fundata$VST) #mode 
-var(fundata$VST) #variance in VST scores - by default this is the sample variance
-sd(fundata$VST) #standard deviation of VST scores - by default this is the sample standard deviation
+cat("mean VST score:", mean(fundata$VST),"\n")  #mean VST score 
+cat("median VST score:", median(fundata$VST),"\n")  #median VST score
+cat("variance in VST score", var(fundata$VST), "\n") #variance in VST scores - by default this is the sample variance
+cat("standard deviation of VST scores", sd(fundata$VST), "\n") #standard deviation of VST scores - by default this is the sample standard deviation
 ```
 
+As we can see, the mean score is around 32.5, the median score is similar (33), the variance is 94.65, and the standard deviation is around 9.7 (which,as a reminder, is the square root of the variance. Below, we will see some of the ways in which these statistics are useful.
 
-### Checking assumptions: Normality
+## Checking assumptions: Normality
 Many statistical tests require data that is normally distributed. These statistical tests are referred to as "parametric" statistical tests. Below, we will see how to to determine the degree to which our data is normally distributed both visually and statistically.
 
+### Visualizing distributions
 In a normal distribution, the median and the mean values will be the same, and ~68% of the data points will be within one standard deviation of the mean. The figure below shows the shape of a normal distribution.
 
 ```{r}
@@ -138,23 +186,25 @@ ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
   scale_y_continuous(breaks = NULL)
 ```
 
-One way that we can check the degree to which our data is normally distributed is to check whether its distribution is similar to a perfectly normal distribution.
+One way that we can check the degree to which our data is normally distributed is to check whether its distribution is similar to a perfectly normal distribution. In the plot below, the blue line represents a normal distribution with the mean and standard deviation of VST scores. The red line represents the actual distribution of VST scores.
 
 ```{r}
-#This code may be useful in the future.
+#This code may be useful in the future, but don't worry about it too much right now.
 ggplot(fundata, aes(x=VST)) + 
-  geom_histogram(aes(y=..density..), color = "black", binwidth = 3) +
+  geom_density(color = "red") +
+  #geom_histogram(aes(y=..density..), color = "black", binwidth = 3) +
   stat_function(fun = dnorm, n = 500, args = list(mean = mean(fundata$VST), sd = sd(fundata$VST)), color = "blue") +
   ylab("") +
   xlab("VST") +
   scale_y_continuous(breaks = NULL)
 ```
 
-It appears as though our data is not normally distributed (it doesn't look very much like the theoretical curve above). 
+It appears as though our data is not normally distributed (the red line that represents the actual data doesn't look very much like the blue line, which represents a normal distribution). 
 
 Another way we can visually check our distribution is to use qq plots. If our data is normally distributed, then our actual data points will fall along our theoretical line (see plot below).
 
 ```{r}
+#don't worry too much about this code for now
 ggplot(fundata, (aes(sample=VST))) + #note that the sample is the variable we are examinining
   stat_qq() + #this adds the points
   stat_qq_line() #this adds the theoretical line
@@ -162,7 +212,7 @@ ggplot(fundata, (aes(sample=VST))) + #note that the sample is the variable we ar
 
 In this case, we see that many of our observed data points fall above or below the theoretical line. This is further indication that our data is not normally distributed
 
-
+### Using a statistical test to check for normality
 However, we can also test to see the degree to which the observed distribution differs from the theoretical one using the Shapiro-Wilk test. In this case, if the _p_ value is small (e.g., below .05), then we can assume that our observed distribution significantly differs from a normal distribution (i.e., it is not normal).
 
 ```{r}
@@ -171,14 +221,14 @@ shapiro.test(fundata$VST)
 
 As we can see from the output, the VST scores are not normally distributed, indicating that we should not use parametric statistics using these values. Fortunately, there are a number of non-parametric tests that can be used (more on this later).
 
-### More assumptions
+## More assumptions
 Each statistical test has a variety of assumptions. As we learn about different tests, we will learn about these assumptions (and what to do if our data violates them).
 
 ## Significance and Effect Size
 
 In quantitative research, we want to determine the probability that our observations (e.g., relationships between two variables or differences between groups) are random. As we will see below, probability estimates are inextricably connected to sample size. Accordingly, we also want to know how large the differences between the two populations are (via an effect size).  
 
-### Probability and Statistical Significance
+## Probability and Statistical Significance
 Statistical significance is inherently tied to probability. In this course we will talk about a number of (relatively) complicated methods for determining the probability of observing a particular result, but in this tutorial we will keep things reasonably simple. In real research, for example, we might want to know whether the probability that a difference in vocabulary test scores between two populations are random or may possibibly be meaningful (e.g., one population had better instruction than the other). We will get to that issue soon enough, but for now we are going to examine a simpler issue. Given a particular population (lets say a group of intermediate language learners at a particular institution), what is the probability that a student will earn a particular score?
 
 Let us assume for a moment that the scores are normally distributed with a range from 30 to 50, a mean of 40, and a standard deviation of 3.
@@ -213,6 +263,7 @@ ggplot(distr, aes(x=x, y=density, fill=group)) +
 To check this proportion precisely, we can use the pnorm() function.
 
 ```{r}
+#don't worry too much about this code
 pnorm(34, mean = 40, sd = 3)
 ```
 
@@ -248,6 +299,7 @@ ggplot(distr, aes(x=x, y=density, fill=group)) +
 ```
 
 ```{r}
+#don't worry too much about this code
 pnorm(40, mean = 37.5, sd = 3)
 ```
 
@@ -258,6 +310,7 @@ If we were to ask whether our mean course scores are statistically significantly
 We can check the score we would need to achieve to hit a certain probability threshold by using the qnorm() function.
 
 ```{r}
+#don't worry too much about this code
 qnorm(.95, mean = 37.5, sd = 3)
 ```
 
@@ -268,7 +321,7 @@ There are many caveats and more complicated situations that we will tackle when 
 ## Effect sizes
 A very important limitation of tests of statistical significance is that they are affected by both the sample size and the size of the observed differences (i.e., the effect). When the sample size is large enough, almost all differences between two groups will be considered statistically significant (due to the Central Limit Theorem).
 
-Effect sizes, however, are not affected by sample size and simply indicate the difference in average values across two populations. There are a number of different effect size calculations (we will learn a few of these as we learn different statistical tests), but arguable the most common are Cohen's D (for difference tests) and _r_ (for correlations). We'll discuss _r_ when we discuss correlations. 
+Effect sizes, however, are not affected by sample size and simply indicate the difference in average values across two populations (for difference tests) or how closely related two sets of variables are (for tests related to correlations). There are a number of different effect size calculations (we will learn a few of these as we learn different statistical tests), but arguably the most common are Cohen's D (for difference tests) and _r_ (for correlations). We'll discuss _r_ when we discuss correlations. 
 
 ### Cohen's D
 Cohen's D is calculated as the |((mean of group A - mean of group B)/pooled standard deviation)|. In short, this tells us how many standard deviations apart the means for the two groups are.
@@ -292,4 +345,4 @@ ggplot(distr, aes(x=x, y=density)) +
   
 ```
 
-To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 3). So, Cohen's D = (|-5/3| = 1.66), which is a large effect (according to Cohen, 1988)
+To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 3). So, Cohen's D = (|-5/3| = 1.66), which is a large effect (according to Cohen, 1988). 

@@ -39,6 +39,7 @@ library(ggplot2) #import ggplot2
 ggplot(data = mpg) + # create plot using the mpg data frame
   geom_boxplot(mapping = aes(x = class, y = hwy)) #create boxplots for each vehicle class based on highway fuel efficiency
 ```
+
 While visualizing data can help us identify general trends, the use of inferential statistics (such as T-tests) helps us to formally (and more precisely) discuss relationships in the data (such as differences between groups). When conducting inferential statistics, we use two primary metrics for measuring relationships in a data set, namely **p-values** and **effect sizes**. These concepts were introduced in [Tutorial 3](https://kristopherkyle.github.io/IntroQuantALRM/3_Loading_data_assumptions_sig_effect.html), but will be revisited (and in some cases expanded on) below. For now, our discussions will be limited to measuring differences in a particular characteristic across two groups (e.g., differences in highway fuel efficiency across midsize vehicles and pickups)
 
 ### probability (p) values revisited

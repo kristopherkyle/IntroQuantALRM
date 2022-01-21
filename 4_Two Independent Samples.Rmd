@@ -1,22 +1,68 @@
 ---
 title: "Two independent samples"
 author: "Kristopher Kyle"
-date: "updated 01/21/2021"
-output: html_document
+date: "last updated 2022-01-21"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Differences between two independent samples
+
+## Tutorial objectives
+**The objectives of this tutorial are to:**
+
+- Learn what difference tests measure 
+- Revisit important statistical terms
+  - _p_ values
+  - _effect sizes_
+- Continue to build proficiency with creating (and interpreting) data visualizations
+  - density plots
+  - box plots
+  - violin plots (new to this tutorial)
+- Learn the assumptions of an independent samples t-test
+- Learn how to test the assumptions of an independent samples t-test
+- Learn how to interpret the output of an independent samples t-test (_p_ values)
+- Learn how to calculate and interpret the effect size for an independent samples t-test
+- Learn how to determine whether differences exist between two independent groups when some of the assumptions of an independent t-test are not met.
+
 
 ## Measuring differences between two independent samples (t-test, Wilcoxon test)
-In applied linguistics research, we sometimes want to know whether two independent groups (e.g., intact classes) differ with regard to some measure (motivation, vocabulary knowledge, writing skill, etc.). We also often want to know whether one teaching method works better than another method with regard to some outcome (e.g., vocabulary test score, writing quality score, etc.). In order to determine whether two groups differ in some regard (i.e., to address the first issue outlined above), we can use an independent samples t-test (for parametric data) or a Wilcoxon test (for non-parametric data). In order to determine whether one teaching method works better than another we will need a different set of statistical tests (stayed tuned!), but we could use an indepedent samples t-test to determine whether two groups were similar with regard to some variable prior to testing a teaching method.
+In research, we often want to know whether groups differ with regard to a particular characteristic. For example, in [Tutorial 2](https://kristopherkyle.github.io/IntroQuantALRM/2_getting_started_vis_data.html) we looked at how particular classes of vehicles differed with regard to  highway fuel efficiency. In the dataset that is visualized below, we can see (for example) that there doesn't seem to be much of a difference in highway fuel efficiency between compact and midsize vehicles. There does, however, seem to be a reasonably large difference in highway fuel efficiency between midsize vehicles and pickups.
+```{r}
+library(ggplot2) #import ggplot2
+ggplot(data = mpg) + # create plot using the mpg data frame
+  geom_boxplot(mapping = aes(x = class, y = hwy)) #create boxplots for each vehicle class based on highway fuel efficiency
+```
+While visualizing data can help us identify general trends, the use of inferential statistics (such as T-tests) helps us to formally (and more precisely) discuss relationships in the data (such as differences between groups). When conducting inferential statistics, we use two primary metrics for measuring relationships in a data set, namely **p-values** and **effect sizes**. These concepts were introduced in [Tutorial 3](https://kristopherkyle.github.io/IntroQuantALRM/3_Loading_data_assumptions_sig_effect.html), but will be revisited (and in some cases expanded on) below. For now, our discussions will be limited to measuring differences in a particular characteristic across two groups (e.g., differences in highway fuel efficiency across midsize vehicles and pickups)
 
-In this tutorial, we will be looking at argumentative essays written in response to two prompts and determining whether the essays differ with regard to number of words. In short, we will be addressing the following research question:
+### probability (p) values revisited
+When using an inferential statistic to determine whether a difference exists between two groups, it is common practice to use a **null hypothesis**, which essentially posits that there is no difference between the two groups (e.g., two types of vehicles) with regard to the characteristic of interest (e.g., highway fuel efficiency). The **null hypothesis** is used purely for statistical reasons - difference tests (such as the ones we will cover in this tutorial) are designed to measure the probability that two sample distributions could actually represent the same distribution. In most cases, researchers presume that there ARE some differences between the groups (this is called the **alternative hypothesis**), and hope that they can reject the **null hypothesis**.
+
+As alluded to in the previous paragraph, a probability value (**p-value**) indicates the probability that two distributions of data (e.g., highway fuel efficiency for midsize vehicles and highway fuel efficiency for pickups) could actually come from the same distribution. If that probability is at or below a particular threshold (referred to as the **alpha** or **α** value), we consider the two distributions to be significantly different. In social science research, we commonly set **α** to _p_ = .05. As a reminder, _p_ = .05 means that there is only a 5% chance that the two observed distributions could actually come from the same distribution. In less precise, but perhaps easier to grasp terms, _p_ = .05 means that there is only a 5% chance that there are no differences across two groups with regard to a particular characteristic.
+
+It is important to note that the larger our samples are, the more sure we can be about how well the distributions in our samples reflect the overall population distribution. This means that the larger our studies are (with regard to participants and/or observations), the more likely we are to get a small _p_ value. In other words, there is a strong link between sample size and _p_ value.
+
+Accordingly, we also need to use a way of measuring the differences of two groups that is independent of sample size. We refer to this type of measurement as an **effect size**.
+
+### effect sizes revisited
+An **effect size** is a sample size independent measure of the relationship between variables. If we are looking at differences between two independent samples using a T-test (as we will later in this tutorial), the **effect size** indicates the difference in mean scores between two groups. Effect sizes are almost always standardized scores, which means that they can be compared across studies. 
+
+While _p_ values indicate how certain we can be about the observed differences between two groups, effect sizes tell us how big the differences actually are. If we are analyzing a small data set, it is entirely possibly for an observed difference between groups to fail to reach statistical significance while demonstrating a large effect. Conversely, if we are analyzing a large data set, it is possible to obtain a tiny _p_ value (i.e., find that there is almost no chance that two distributions actually represent the same distribution) while also finding that the effect size (the size of the difference) is negligible.
+
+## Differences between two independent groups in Applied Linguistics research
+In applied linguistics research, we sometimes want to know whether two independent groups (e.g., intact classes) differ with regard to some measure (motivation, vocabulary knowledge, writing skill, etc.). We also often want to know whether one teaching method works better than another method with regard to some outcome (e.g., vocabulary test score, writing quality score, etc.). In order to determine whether two groups differ in some regard (i.e., to address the first issue outlined above), we can use an independent samples t-test (for parametric data) or a Wilcoxon test (for non-parametric data). In order to determine whether one teaching method works better than another we will need a different set of statistical tests (stayed tuned!), but we could use an independent samples t-test to determine whether two groups were different with regard to some variable prior to testing a teaching method.
+
+In this tutorial, we will be looking at argumentative essays written in response to two argumentative prompts (one about smoking in public places and the second about whether college students should have part time jobs). Specifically, we will be determining the degree to which either prompt tends to elicit longer essays (measured in number of words per essay). In short, we will be addressing the following research question:
 
 Do the responses to the two essay prompts (prompt A and prompt B) differ with regard to number of words?
 
-Our null hypothesis will be that there is no difference in number of words between the two prompts.
+Our **null hypothesis** will be that there is no difference in number of words between the two prompts.
 
 ### Conducting an independent samples t-test: Assumptions
 Independent samples t-tests are rather simple tests that use the sample means and the variance in each sample to determine the probability that the two samples are part of the same population.
@@ -25,37 +71,37 @@ Following are the assumptions for an independent samples t-test:
 
 - Each sample is normally distributed
 - The variance is roughly equal across samples
-- The data do not represent repeated measures (e.g., pre- and post- test scores from the same individuals)
+- The groups are independent (e.g., the data were not generated from the same individuals)
 - The data is continuous
 - There is only one comparison (an ANOVA is appropriate for multiple comparisons, stay tuned)
 
 ### Checking assumptions
-Let's load some data (this is the dataset that we used in class on Wednesday) and check assumptions.
+First, we will load some data and check assumptions. You can [download the data here](https://raw.githubusercontent.com/kristopherkyle/IntroQuantALRM/main/data/distribution_sample.csv). Note that if the file doesn't download directly you can right click on your browser window and choose the "save as" option to save the file on your computer.
 
 ``` {r}
-mydata <- read.csv("data/distribution_sample.csv", header = TRUE)
+mydata <- read.csv("data/distribution_sample.csv", header = TRUE) #this presumes that we have a folder in our working directory named "data" and that we have a file named "distribution sample" in that folder.
 summary(mydata)
 ```
 
 #### Step 1: Check for normality:
 
-First, we will visually inspect the data using histograms.
+First, we will visually inspect the data for normality using density plots. We can either display these as two plots (using facet_wrap()) or as a single plot.
 
 ```{r}
 library(ggplot2)
-ggplot(mydata, aes(x=Nwords)) + 
-  geom_histogram(binwidth = 20) +
+ggplot(mydata, aes(x=Nwords, color = Prompt)) + 
+  geom_density() +
   facet_wrap(~Prompt)
 ```
-
-Alternatively, we could also use density plots, which show similar information as histograms, but add smoothing lines. Again, the plot indicates that both datasets are roughly (but not perfectly) normal.
 
 ```{r}
 ggplot(mydata, aes(x=Nwords, color = Prompt, fill=Prompt)) +
   geom_density(alpha = 0.4)
 ```
 
-We can also use the (rather stringent) Shapiro-Wilk test. As we see below, the Shapiro-Wilk test indicates that the data from both prompts significantly vary from a normal distribution.
+Either way, we observe that the two datasets roughly (but certainly not perfectly) represent a normal distribution.
+
+We can also use the (rather stringent) Shapiro-Wilk test on each dataset (Prompt A and Prompt B). As we see below, the Shapiro-Wilk test indicates that the data from both prompts significantly vary from a normal distribution.
 
 ```{r}
 #load dplyr package, which helps us manipulate datasets:
@@ -80,13 +126,14 @@ We can get an idea of the variance in distribution plots, but one of the the cle
 
 ```{r}
 ggplot(data = mydata) + 
-  geom_boxplot(mapping = aes(x = Prompt, y = Nwords))
+  geom_boxplot(aes(x = Prompt, y = Nwords, color = Prompt))
 ```
 
 
-In addition to visualizing our data, we can run Levene's test, which is available via the car() package. The results below indicate that the two variance in Nwords across the two Prompts in our dataset are not significantly different (_p_ = 0.769). In other words, we very clearly meet the assumption of equal variance.
+In addition to visualizing our data, we can run Levene's test, which is available via the car() package (don't forget to install it if you haven't installed it yet). The results below indicate that the variance in Nwords score across the two Prompts in our dataset is not significantly different (_p_ = 0.769). In other words, we very clearly meet the assumption of equal variance.
 
 ```{r}
+#install.packages("car")
 library(car)
 leveneTest(Nwords ~ Prompt, mydata) #the syntax here is variable, grouping variable, dataframe
 ```
@@ -94,7 +141,7 @@ leveneTest(Nwords ~ Prompt, mydata) #the syntax here is variable, grouping varia
 #### Step 3: Other assumptions
 Lets revisit our assumptions (and whether or not we meet them):
 
-- Each sample is normally distributed (visually the data approaches a normal distribution, but the Shapiro-Wilks test indicates that it is not strictly normal)
+- Each sample is normally distributed (visually the data approaches a normal distribution, but the Shapiro-Wilks test indicates that it is not strictly normal - we could make an argument for this either way)
 - The variance is roughly equal across samples (both visual inspection and Levene's test indicates that the variance is roughly equal)
 - The data do not represent repeated measures (our data are not repeated measures - each essay was written by a different individual) 
 - The data is continuous (the variable Nwords is indeed continuous)
@@ -106,7 +153,7 @@ So, we meet all assumptions except (possibly) the assumption of normality. Below
 If our data meets the assumptions of a t-test, then we can use the t-test to examine differences between two independent groups (e.g., to determine whether there are differences in essay length based on prompt). Our first step is to visualize the data.
 
 #### Visualizing two groups
-The prototypical plot used to examine two independent groups is the boxplot. We already made one above, but we will repeat it here for good measure (with one additional parameter so it looks a little nicer) :).
+The prototypical plot used to examine two independent groups is the boxplot. We already made one above, but we will repeat it here for good measure :).
 
 Based on the boxplots, we see that the median number of words in Prompt A score is slightly higher than the median number of words in Prompt B, though it is unclear whether this difference will be statistically significant or not. Regardless, given the overlap in the boxplots, it is unlikely that the effect will be large. But, we have inferential tests (like the t-test!) to objectively determine this.
 
@@ -115,7 +162,7 @@ ggplot(data = mydata) +
   geom_boxplot(mapping = aes(x = Prompt, y = Nwords,color = Prompt))
 ```
 
-A second (arguably way cooler) way to visualize the data is with violin plots. A violin plot is similar to a boxplot except that the distribution of the data is represented more precisely. If you look at one side of the violin plot (and rotate it 180 degrees) it will resemble the density plots that we made above.
+A second (arguably way cooler) way to visualize the data is with violin plots. A violin plot is similar to a boxplot except that the distribution of the data is represented more precisely. If you look at one side of the violin plot (and rotate it 180 degrees) it will resemble the density plots that we made above. In the plot below, we have created boxplots inside the violin plots.
 
 ```{r}
 ggplot(data = mydata) + 
@@ -133,19 +180,20 @@ The results indicate that there is a significant difference (_p_ = .049) between
 t.test(Nwords~Prompt, alternative = 'two.sided', conf.level = .95, var.equal = TRUE, data = mydata)
 ```
 
-Next, we will check the effect size to examine how large the difference in number of words are between the two prompts (while taking into account the variance in scores across the samples). To do so, we will use the cohen.d() function in the psych() package.
+Next, we will check the effect size to examine how large the difference in number of words are between the two prompts (while taking into account the variance in scores across the samples). To do so, we will use the cohen.d() function in the psych() package, which calculates the effect size measure _d_. _d_ indicates the difference between the mean scores of two groups. _d_ values represent this difference in terms of the pooled standard deviation. Accordingly, if _d_ = .5, then the two means differ by .5 standard deviations.
 
 
 ``` {r}
+#install.packages("psych") #install this package if needed
 library(psych)
 cohen.d(mydata,"Prompt") #this will generate results for all variables in the data
 ```
 
-The results indicate an effect of _d_ = .181 (we can ignore the negative sign here). Cohen's (1988) recommendations for interpreting the effect size measure d suggest that d values between .20 and .49 are "small", values between .50 and .79 are "medium", and values above .8 are "large". This suggest that the difference between number of words between prompts is below the threshold for a "small" effect (I usually refer to this as a "negligible" effect).
+The results indicate an effect of _d_ = .18 (we can ignore the negative sign here), which means that the difference between the two means is .18 standard deviations. Cohen's (1988) recommendations for interpreting the effect size measure _d_ suggest that _d_ values between .20 and .49 are "small", values between .50 and .79 are "medium", and values above .8 are "large". This suggests that the difference between number of words between prompts is below the threshold for a "small" effect (I usually refer to this as a "negligible" effect).
 
 
 ### Mann-Whitney _U_ test (Wilcoxon rank-sum test)
-If your data is not normally distributed, then you can use a non-parametric independent samples t-test, the Mann-Whitney _U_ test (also called a Wilcoxon rank-sum test) is an option.
+If your data is not normally distributed, you shouldn't use a parametric test (such as the t-test we conducted above). Instead, you should use a non-parametric independent samples t-test, such as the Mann-Whitney _U_ test (also called a Wilcoxon rank-sum test).
 
 Note that if your variance is roughly equal, this will test whether the medians in the two groups are equal. If your variance is not roughly equal, then this will test whether the distributions are equal. In our case, the variance IS equal (according to both visual inspection and Levene's test), so we can interpret the results in a similar manner as an independent samples t-test.
 
@@ -155,11 +203,12 @@ Conducting the Mann-Whitney _U_ test is straightforward in R. Note that your con
 wilcox.test(Nwords~Prompt,data = mydata)
 ```
 
-The test indicated that there is a significant differences in number of words between essays written in response to Prompt A and essays written in response to Prompt B (_p_ = .013).
+The test indicated that there is a significant difference in number of words between essays written in response to Prompt A and essays written in response to Prompt B (_p_ = .013).
 
-Below, we will calculate the effect size. In this case, we will use the measure r, which can be interpreted using the same guidelines as correlations (.100 = small, .300 = medium, .600 = large)
+Below, we will calculate the effect size. In this case, we will use the measure r, which can be interpreted using the same guidelines as correlations (Cohen, 1988 suggests that .100 = small, .300 = medium, .600 = large)
 ```{r}
-library(rcompanion) #don't forget to install if you haven't already
+#install.packages("rcompanion") #don't forget to install if you haven't already
+library(rcompanion) 
 wilcoxonR(mydata$Nwords,mydata$Prompt)
 ```
 

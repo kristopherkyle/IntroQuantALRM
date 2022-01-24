@@ -1,7 +1,7 @@
 ---
 title: "Two independent samples"
 author: "Kristopher Kyle"
-date: "last updated 2022-01-21"
+date: "last updated 2022-01-23"
 output:
   html_document:
     toc: true

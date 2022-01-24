@@ -84,6 +84,33 @@ mydata <- read.csv("data/distribution_sample.csv", header = TRUE) #this presumes
 summary(mydata)
 ```
 
+#### Getting descriptive statistics
+In addition to visualizing data, getting descriptive statistics can be helpful in understanding the nature of your dataset. Below we get descriptive statistics for our entire dataset, then we split our dataset into two prompts, and get descriptives statistics for each.
+
+``` {r}
+library(psych)
+library(dplyr)
+describe(mydata) #get descriptive statistics
+```
+
+**Prompt A**
+
+```{r}
+#load dplyr package, which helps us manipulate datasets:
+library(dplyr)
+#create a new dataframe that includes only responses to Prompt A:
+promptA <- mydata %>% filter(Prompt == "A")
+describe(promptA)
+```
+
+**PromptB**
+
+```{r}
+##create a new dataframe that includes only responses to Prompt b:
+promptB <- mydata %>% filter(Prompt == "B")
+describe(promptB)
+```
+
 #### Step 1: Check for normality:
 
 First, we will visually inspect the data for normality using density plots. We can either display these as two plots (using facet_wrap()) or as a single plot.
@@ -105,13 +132,6 @@ Either way, we observe that the two datasets roughly (but certainly not perfectl
 We can also use the (rather stringent) Shapiro-Wilk test on each dataset (Prompt A and Prompt B). As we see below, the Shapiro-Wilk test indicates that the data from both prompts significantly vary from a normal distribution.
 
 ```{r}
-#load dplyr package, which helps us manipulate datasets:
-library(dplyr)
-#create a new dataframe that includes only responses to Prompt A:
-promptA <- mydata %>% filter(Prompt == "A")
-##create a new dataframe that includes only responses to Prompt b:
-promptB <- mydata %>% filter(Prompt == "B")
-
 #Test normality for Nwords in PromptA
 shapiro.test(promptA$Nwords) #p = 0.001872
 
@@ -150,7 +170,7 @@ Lets revisit our assumptions (and whether or not we meet them):
 
 So, we meet all assumptions except (possibly) the assumption of normality. Below, we will see what to do if we meet all assumptions, and an alternative test we can use if we don't meet the assumption of normality.
 
-### Examining differences between twoindependent samples: Independent samples t-test
+### Examining differences between two independent samples: Independent samples t-test
 If our data meets the assumptions of a t-test, then we can use the t-test to examine differences between two independent groups (e.g., to determine whether there are differences in essay length based on prompt). Our first step is to visualize the data.
 
 #### Visualizing two groups
@@ -191,6 +211,38 @@ cohen.d(mydata,"Prompt") #this will generate results for all variables in the da
 ```
 
 The results indicate an effect of _d_ = .18 (we can ignore the negative sign here), which means that the difference between the two means is .18 standard deviations. Cohen's (1988) recommendations for interpreting the effect size measure _d_ suggest that _d_ values between .20 and .49 are "small", values between .50 and .79 are "medium", and values above .8 are "large". This suggests that the difference between number of words between prompts is below the threshold for a "small" effect (I usually refer to this as a "negligible" effect).
+
+#### Writing up an independent samples t-test result
+One way to write up these results is as follows:
+
+**Results**
+
+The purpose of this study was to determine whether there was a difference in essay length between two timed writing prompts. Descriptive statistics for this analysis can be found in Table 1. A visualization of the results can be found in Figure 1.
+
+Table 1.  
+Number of words per essay in each prompt
+
+| Prompt | _n_ | Mean | Standard Deviation | 
+| :------ | :--- | :---- | :--- | 
+| Prompt A | 240 | 324.69 | 79.33 | 
+| Prompt B | 240 | 310.61	 | 76.75 |
+| Full Dataset | 480 | 317.65 | 78.28 |
+
+```{r, echo=FALSE}
+ggplot(data = mydata) + 
+  geom_boxplot(mapping = aes(x = Prompt, y = Nwords,color = Prompt))
+```
+
+Figure 1. Box plot indicating the number of words per essay in each prompt
+
+Assumptions for an independent samples t-test were conducted. A visual inspection of density plots indicated that the distribution of the data was roughly normal. A visual inspection of density plots amd box plots suggested that the variance was equal across the two prompts. A Levene's test confirmed that there were no significant differences between the variance in each prompt. An independent samples t-test was then conducted to determine whether there were differences in the number of words per essay across the two essay prompts. The results of the t-test indicated that there was a significant (_p_ = .049) but negligible (_d_ = .18) difference in the number of words per essay across the two prompts. The full results can be found in Table 2.
+
+Table 2. 
+Results of the independent samples t-test 
+
+| Variable | _n_ | df | t | _p_ | _d_ |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| number of words per essay | 480 | 478 | 1.976 | 0.049 | .18 |
 
 
 ### Mann-Whitney _U_ test (Wilcoxon rank-sum test)

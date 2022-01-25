@@ -33,7 +33,7 @@ To use an ANOVA, our data must meet the following assumptions:
 - The data is continuous
 
 ### Description of sample data
-In this tutorial, we will be looking at essays written by individuals at three different levels of lexical proficiency (Beginner, Intermediate, and High). We will also be looking at the average meaningfulness score for all words in each text. Meaningfulness scores are one way of determining how many concepts a particular word might be related to (e.g., the word "food" would be more "meaningful" than "zygote" because it could be used in more semantic contexts). We will be determining whether there are any differences in average meaningfulness scores based on lexical proficiency group.
+In this tutorial, we will be looking at essays written by individuals at three different levels of lexical proficiency (Beginner, Intermediate, and High). We will also be looking at the average meaningfulness score for all words in each text. Meaningfulness scores are one way of determining how many concepts a particular word might be related to (e.g., the word _food_ would be more "meaningful" than _zygote_ because it could be used in more semantic contexts). We will be determining whether there are any differences in average meaningfulness scores based on lexical proficiency group.
 
 Accordingly, our research question is: Are there differences across proficiency levels with regard to word meaningfulness scores?
 
@@ -47,7 +47,7 @@ summary(mydata)
 ### Checking assumptions, visualizing the data
 
 #### Checking the assumption of normality
-First, we can create density plots to look at the distribution of each group. These density plots suggest that the data is roughly normal and that the variance is roughly equal.
+First, we can create density plots to look at the distribution of each group. These density plots suggest that the data is roughly normal (because there is a central tendency and the plots are reasonably symmetrical) and that the variance is roughly equal (because the spread of data is similar for each).
 
 ```{r}
 library(ggplot2)
@@ -79,7 +79,7 @@ shapiro.test(high.ds$Meaningfulness_AW) #p = 0.1591
 
 ```
 
-The results indicate that Meaningfulness_AW scores Beginner and High essays do not violate the assumption of normality, while Meaningfulness_AW scores for Int essays do (_p_ = 0.011). As mentioned in previous tutorials, the Shapiro-Wilk test is rather stringent, so we can decide whether we think it is appropriate to use a parametric or non-parametric test based on the visual inspection and on the Shapiro-Wilk test results.
+The results indicate that Meaningfulness_AW scores Beginner and High essays do not violate the assumption of normality (the _p_ value is larger than .05), while Meaningfulness_AW scores for Int essays do (_p_ = 0.011, which is less than .05). As mentioned in previous tutorials, the Shapiro-Wilk test is rather stringent, so we can decide whether we think it is appropriate to use a parametric or non-parametric test based on the visual inspection and on the Shapiro-Wilk test results.
 
 #### Checking the assumption of equal variance
 Second, we will check the assumption of equal variance (also known as homogeneity of variance). First, we will generate some boxplots, which (along with the distribution plots above), help give an indication of whether our groups have roughly equal variance. 
@@ -98,7 +98,7 @@ ggplot(data = mydata) +
   xlab("Proficiency")
 ```
 
-These boxplots support the notion that the variance is roughly equal, and also suggests that there may be meaningful differences between the groups. 
+These boxplots support the notion that the variance is roughly equal (because the boxes have similar heights), and also suggests that there may be meaningful differences between the groups. 
 
 We can also use Levene's test to statistically assess whether the variance is roughly equal between groups.
 
@@ -107,7 +107,7 @@ library(car)
 leveneTest(Meaningfulness_AW ~ Proficiency, mydata) #the syntax here is variable ~ grouping variable, dataframe
 ```
 
-The results of Levene's test indicate that there is not a significant difference in the variance across our three proficiency groups, which means that our data meets this assumption.
+The results of Levene's test indicate that there is not a significant difference in the variance across our three proficiency groups (the _p_ value is larger than our alpha value of .05), which means that our data meets this assumption.
 
 ### Conducting a one-way Analysis of Variance (ANOVA)
 First, lets revisit the assumptions of an ANOVA:
@@ -131,7 +131,7 @@ summary(anova_model)
 
 There are a lot of numbers above, but for now we will only discuss Pr(>F) (this is our _p_ value). As we can see, there _is_ a significant difference between our groups (_p_ < .05).
 
-To determine how "big" the difference(s) are, we will use the etaSquared() function. Note that the rules of thumb for etaSquared are as follows:
+To determine how "big" the difference(s) are, we will use the etaSquared() function. Note that the rules of thumb (based on Cohen, 1988) for etaSquared are as follows:
 
 - .100-.299 (small)
 - .300-.599 (medium)

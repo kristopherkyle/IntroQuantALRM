@@ -7,7 +7,7 @@ output:
     toc: true
     toc_float: true
 ---
-
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,message = FALSE, warning = FALSE)
 ```

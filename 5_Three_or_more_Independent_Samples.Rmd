@@ -44,6 +44,30 @@ mydata <- read.csv("data/anova_sample.csv", header = TRUE)
 summary(mydata)
 ```
 
+### Checking descriptive statistics
+``` {r}
+library(psych)
+library(dplyr)
+mfl <- mydata %>% dplyr::select(Proficiency,Meaningfulness_AW)
+
+describe(mfl) #get descriptive statistics
+```
+**Beginner**
+```{r}
+mfl.beg <- mfl %>% dplyr:: filter(Proficiency == "Beginner")
+describe(mfl.beg) #get descriptive statistics
+```
+
+**intermediate**
+```{r}
+mfl.int <- mfl %>% dplyr:: filter(Proficiency == "Int")
+describe(mfl.int) #get descriptive statistics
+```
+**high**
+```{r}
+mfl.high <- mfl %>% dplyr:: filter(Proficiency == "High")
+describe(mfl.high) #get descriptive statistics
+```
 ### Checking assumptions, visualizing the data
 
 #### Checking the assumption of normality
@@ -181,6 +205,46 @@ mydata_int_high <- mydata %>%
 cohen.d(mydata_beg_high,"Proficiency")# (-)1.2 [large effect]
 cohen.d(mydata_int_high,"Proficiency")# .56 [medium effect]
 ```
+
+### How to write up the results of a one-way ANOVA
+
+One way to write up these results is as follows:
+
+**Results**
+
+The purpose of this study was to determine whether there was a difference in productive lexical proficiency (measured via mean meaningfulness scores) across three proficiency levels. Descriptive statistics for this analysis can be found in Table 1. A visualization of the results can be found in Figure 1.
+
+Table 1.  
+Meaningfulness scores in each proficiency level
+
+| Proficiency Level | _n_ | Mean | Standard Deviation | 
+| :------ | :--- | :---- | :--- | 
+| Beginner | 61 | 385.82 | 16.68 | 
+| Intermediate | 111 | 376.32	| 18.18 |
+| High | 66 | 367.01 | 13.73 |
+| Total | 240 |376.1 | 17.96 |
+
+```{r, echo=FALSE}
+ggplot(data = mydata) + 
+  geom_boxplot(aes(x = reorder(Proficiency, Meaningfulness_AW, FUN = median), y = Meaningfulness_AW, color = Proficiency)) +
+  xlab("Proficiency")
+```
+
+Figure 1. Box plot indicating the meaningfulness scores in each proficiency group
+
+Assumptions for a one-way ANOVA were tested. A visual inspection of density plots indicated that the distribution of the data in each group was roughly normal. A visual inspection of density plots and box plots suggested that the variance was equal across the two prompts. A Levene's test confirmed that there were no significant differences between the variance in each proficiency group. A one-way ANOVA was then conducted to determine whether there were differences in the average meaningfulness scores essays in each proficiency group. The results of the one-way ANOVA indicated that there was a significant (_p_ = .049), small (eta squared = .148) difference in the meaningfulness scores across proficiency levels. The full results can be found in Table 2. To determine where pairwise differences existed, Tukey's HSD tests were conducted
+
+Table 2. 
+Results of the independent samples t-test 
+
+| Variable | _n_ | df | F | _p_ | eta squared |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| number of words per essay | 240 | 2, 237 | 20.53 | < 0.001 | .148 |
+
+To determine where pairwise differences existed, Tukey's HSD tests were conducted. The results, which are summarized in Table 3, indicate that **FINISH THIS**...
+
+**INSERT TABLE 3 HERE**
+
 
 ### How to compare groups if we do not meet the assumptions of a one-way ANOVA?
 

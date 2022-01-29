@@ -1,10 +1,13 @@
 ---
 title: "Paired Samples Difference Tests"
 author: "Kristopher Kyle"
-date: "(updated 1/28/2021)"
-output: html_document
+date: "Last updated 2022-01-29"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
-
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
 ```
@@ -15,7 +18,7 @@ Often in second language research, we want to know if participants' performance 
 ### Data for this tutorial
 In this tutorial, we will not be looking at a pre-post test design, but we will be looking a related data, namely essays written by the same individuals. 
 
-The data for this tutorial comprise concreteness scores, range scores, proportion of 1,000 word list words (i.e., the most frequent 1000 words in the English language), proportion of 2000 word list words (i.e., the second most frequent 1000 words in the English language), and proportion of academic word list (AWL) words for 500 L2 English essays written by L1 users of Mandarin Chinese. Each participant wrote two essays. One of these essays was written in response to a "part-time job" prompt (PTJ), and the other to a "smoking" prompt (SMK). See the [ICNALE corpus](http://language.sakura.ne.jp/icnale/) for further information about the characteristics of the learner corpus. The essays were processed using [TAALES](https://www.linguisticanalysistools.org/taales.html) and another in-house Python script to generate the index scores. For this tutorial, we will be examining the degree to which writing prompt affects the average concreteness scores of the words used in an essay. Note that (for argumentative essays) concreteness scores tend to be negatively correlated with essay quality score and judgements of lexical proficiency. In other words, argumentative essays that (on average) include less concrete words (i.e., more abstract words) tend to earn higher scores. However, it is not clear how essay prompt affects these scores. This issue is what we will be examining in this tutorial.
+The data for this tutorial comprise concreteness scores, range scores, proportion of 1,000 word list words (i.e., the most frequent 1000 words in the English language), proportion of 2000 word list words (i.e., the second most frequent 1000 words in the English language), and proportion of academic word list (AWL) words for 500 L2 English essays written by L1 users of Mandarin Chinese. Each participant wrote two essays. One of these essays was written in response to a "part-time job" prompt (PTJ), and the other to a "smoking" prompt (SMK). See the [ICNALE corpus](http://language.sakura.ne.jp/icnale/) for further information about the characteristics of the learner corpus. The essays were processed using [TAALES](https://www.linguisticanalysistools.org/taales.html) and another in-house Python script to generate the index scores. For this tutorial, we will be examining the degree to which writing prompt affects the average concreteness scores of the words used in an essay. Note that (for argumentative essays) concreteness scores tend to be negatively correlated with essay quality score and judgements of lexical proficiency. In other words, argumentative essays that (on average) include less concrete words (i.e., more abstract words) tend to earn higher scores. However, it is not clear how essay prompt affects these scores. This is an important issue in assessment, because we often want to give students different versions of the "same" test, but also want to treat scores across these two versions as equal. This issue is what we will be examining in this tutorial.
 
 
 ``` {r}

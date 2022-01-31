@@ -112,6 +112,8 @@ Now that we have run the model, we can check the assumption of normality (of the
 library(car)
 qqPlot(model1)
 ```
+### Example write-up
+(this will be added by the end of the week)
 
 ### Obligatory Stats Joke
 ![from xkcd: https://xkcd.com/1725/](https://imgs.xkcd.com/comics/linear_regression.png)

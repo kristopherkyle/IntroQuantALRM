@@ -1,9 +1,13 @@
 ---
 title: "Regression"
 author: "Kristopher Kyle"
-date: "(updated 2/1/2021"
-output: html_document
+date: "Last updated 2022-01-31"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
@@ -13,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
 
 To fully understand the information on this page, be sure to read the [previous tutorial on correlation](https://kristopherkyle.github.io/IntroQuantALRM/9_Correlations.html).
 
-Regression is used for value prediction. For example, lets imagine that we have a set of writing proficiency scores (dependent variable) and corresponding mean word frequency values (which are a measure of lexical sophistication; this would be an independent variable). Regression allows us to predict the writing proficiency scores based on the mean frequency values. The stronger the relationship is between the two values, the better the predictions will be.
+Regression is used for value prediction. For example, lets imagine that we have a set of writing proficiency scores (dependent variable) and corresponding mean word frequency values (which are a measure of lexical sophistication; this would be an independent variable). Regression allows us to predict the writing proficiency scores based on the mean frequency values. The stronger the relationship is between the two values, the better (more accurate) the predictions will be.
 
 Conceptually (and mathematically), regression is related to correlation. The main difference is that the results of a regression include more information, namely the characteristics of the line of best fit through the data.
 
@@ -43,7 +47,7 @@ summary(cor_data) #get descriptive statistics for the dataset
 
 Our variables of interest (frequency_CW) and number of words (nwords) are both continuous variables, so we meet the first assumption.
 
-Next, we will test the assumption of linearity using a Loess line (in red) and a line of best fit (in blue). These indicate that our data are roughly linear (because the red line mirrors the blue one). Note that this is the same data from the correlation tutorial, but with the x and y axes flipped.
+Next, we will test the assumption of linearity using a Loess line (in red) and a line of best fit (in blue). These indicate that our data are roughly linear (because the red line mirrors the blue one). Note that this is the same data from the correlation tutorial.
 
 ```{r}
 ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
@@ -73,7 +77,7 @@ We then can see the model summary using the summary() function:
 summary(model1)
 ```
 
-There is a wealth of information provided by this output. For the purposes of this tutorial, we are interested in five particular pieces, including the Estimate(s), the Std. Error, the p-value, the Multiple R-squared, and the Adjusted R-squared.
+There is a wealth of information provided by this output. For the purposes of this tutorial, we are interested in five particular pieces, including the Estimate(s), the Std. Error, the p-value, the Multiple R-squared, and the Adjusted R-squared. Each of these are described below.
 
 #### Estimate(s)
 The estimate(s) provide the information needed to construct the regression line (and therefore predict nwords values based on frequency_CW values).

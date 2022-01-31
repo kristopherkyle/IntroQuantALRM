@@ -56,7 +56,7 @@ To check the linearity of our data, we will create a scatterplot. For our data t
 The blue line below represents the (straight) line of best fit for the data, while the red line represents a line of best fit based on a moving average (called a "Loess" line). In order to meet the assumption of linearity, we want the red line to approximate the blue line. In this case, we can make a pretty strong argument that we meet the assumption of linearity.
 
 ```{r}
-ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
+ggplot(cor_data, aes(x = frequency_CW, y= nwords )) +
   geom_point() +
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
   geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
@@ -67,19 +67,19 @@ ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
 Outliers can strongly affect our correlation coefficents (particularly in small datasets). Because our dataset is fairly large (480 participants), having a few outliers will not be a large problem. To check for outliers, lets take a look at the scatterplot again.
 
 ```{r}
-ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
+ggplot(cor_data, aes(x = frequency_CW, y= nwords )) +
   geom_point() +
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
   geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
-It appears as though we only have a few outliers (and one particularly extreme one in the bottom right section of the plot.) Based on the size of the data, there don't seem to be any large issues to be worried about. If we look at the red line, we can actually see the effect of the outliers (e.g., the slight dip in the line at 200 words, the slight rise in the line at around 350 words, and the slight dip in the line around 500 words). However, because these perturbations in the line are rather small, we can conclude that they are not causing large issues.
+It appears as though we only have a few outliers (and one particularly extreme one in the bottom right section of the plot.) Based on the size of the data, there don't seem to be any large issues to be worried about. If we look at the red line, we can actually see the effect of the outliers (e.g., the slight rise in the line at frequency of 2.9 words and the  rise in the line at a frequency of 2.25. However, because these perturbations in the line are rather small, we can conclude that they are not causing large issues.
 
 #### Assumption 4: Normality
-Next, we will check the assumption of bivariate normality for our variables using two-dimensional density plots. We can look a the plot in a similar way that we would look at a contour map. In this case, the lighter colored regions have higher density (think altitude) than the darker shaded regions. A perfect bivariate distribution would look like a 3-dimensional normal distribution curve. What we have below roughly follows this shape: The most dense regions are in the middle of the plot. The countours of our "mountain" are not perfectly symmetrical (we see some ridges and valleys leading from the summit), but they are reasonably symmetrical. Thus, our visual inspection indicates that we have a roughly normal bivariate distribution.
+Next, we will check the assumption of bivariate normality for our variables using two-dimensional density plots. We can look a the plot in a similar way that we would look at a contour map. In this case, the lighter colored regions have higher density (think altitude) than the darker shaded regions. A perfect bivariate distribution would look like a 3-dimensional normal distribution curve. What we have below roughly follows this shape: The most dense regions are in the middle of the plot. The contours of our "mountain" are not perfectly symmetrical (we see some ridges and valleys leading from the summit), but they are reasonably symmetrical. Thus, our visual inspection indicates that we have a roughly normal bivariate distribution.
 
 ```{r}
-ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
+ggplot(cor_data, aes(x = frequency_CW, y=nwords )) +
   stat_density_2d(aes(fill = ..level..), geom = "polygon")
 ```
 

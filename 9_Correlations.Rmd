@@ -1,9 +1,13 @@
 ---
 title: "Correlation"
-output: html_document
 author: "Kristopher Kyle"
-date: "(updated 2/1/2021)"
+date: "Last updated 2022-01-31"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
@@ -14,11 +18,11 @@ knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
 ### The basics
 A correlation is a measure that indicates the degree to which the values of one variable change with respect to another variable. For example, we might examine the relationship between the temperature and the number of students wearing a sweatshirt/jacket on campus. In second language learning, we might look at the relationship between the number of hours a student spends studying and their scores on a proficiency test. For most of this tutorial, we will be looking at a common type of correlational analysis (Pearson's product-moment correlation), though the calculation of other correlation coefficients will be briefly discussed at the end.
 
-Importantly, correlation values (hereafter referred to as _r_) are an effect size that range from -1.0 to 1.0. When we interpret the **size** of a correlation, we are concerned with the absolute value of the number, not the directionality. For example, an _r_ value of -.700 is bigger than an _r_ value of .300. 
+Importantly, correlation values (hereafter referred to as _r_) are an effect size that range from -1.0 to 1.0. When we interpret the **size** of a correlation, we are concerned with the absolute value of the number (i.e., how far the value is from zero), not the directionality. For example, an _r_ value of -.700 is bigger than an _r_ value of .300 (-.700 is further from zero than .300). 
 
 The sign of the _r_ value tells us whether the values from variable A increase as the values of variable B increase (resulting in a positive sign) OR if the variable A values decrease as the variable B values increase (a negative sign). For example, we would expect a NEGATIVE correlation between temperature and number of students wearing jackets on campus (as one value goes down [temperature] the other goes up [number of jacket-wearing individuals] and vice versa). On the other hand, we would expect a POSITIVE relationship between the number of hours spent studying a language and their scores on a language proficiency test (as one value goes up [time spent studying] the other also goes up [proficiency scores] and vice versa).
 
-Finally, _p_ values are also calculated for correlation analyses. These values tell us the probability that observed relationship between the variables would be observed if there were actually no relationship between them.
+Finally, _p_ values are also calculated for correlation analyses. These values tell us the probability that observed relationship between the variables would be observed in our sample if there were actually no relationship between them in the larger population.
 
 ### Assumptions
 Pearson's correlation has the following assumptions:
@@ -29,11 +33,11 @@ Pearson's correlation has the following assumptions:
 
 - There are no outliers (or there are only minimal outliers in large samples)
 
-- The variables must have a bivariate normal distribution (note that this is conceptually related to, but different from the normal distributions that we have been discussing so far)
+- The variables must have a bivariate normal distribution (Note that this is conceptually related to, but different from the normal distributions that we have been discussing so far. Also note that this is likely checked fairly rarely in the real world.)
 
 
 ### Checking assumptions
-In our first example, we will examine the relationship between  between number of words (as a proxy for proficiency) and lexical sophistication (measured as word frequency) in a corpus of argumentative essays written as part of a standardized test of English proficiency.
+In our first example, we will examine the relationship between between number of words (as a proxy for proficiency) and lexical sophistication (measured as word frequency) in a corpus of argumentative essays written as part of a standardized test of English proficiency. Based on theories of language learning (e.g., Ellis, 2002), we would expect that more proficient writers would (on average) use less frequent words (which are considered to be MORE sophisticated).
 
 These variables (and a few others) are included in the "correlation_sample.csv" file included on our Canvas page.
 
@@ -49,15 +53,13 @@ Our data for each variable is continuous (it is not, for example, categorical), 
 #### Assumption 2: Linearity
 To check the linearity of our data, we will create a scatterplot. For our data to meet the criteria of linearity, it will need to fall in roughly a straight line (and not one that is curvilinear). 
 
-The blue line below represents the (straight) line of best fit for the data, while the red line represents a line of best fit based on a moving average. In order to meet the assumption of linearity, we want the red line to approximate the blue line. In this case, we can make a pretty strong argument that we meet the assumption of linearity.
+The blue line below represents the (straight) line of best fit for the data, while the red line represents a line of best fit based on a moving average (called a "Loess" line). In order to meet the assumption of linearity, we want the red line to approximate the blue line. In this case, we can make a pretty strong argument that we meet the assumption of linearity.
 
 ```{r}
 ggplot(cor_data, aes(x = nwords, y=frequency_CW )) +
   geom_point() +
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
   geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
-
-
 ```
 
 
@@ -101,7 +103,7 @@ cor.test(cor_data$nwords,cor_data$frequency_CW)
 ```
 
 #### Interpreting the _p_ value
-In this case, the results indicate a significant relationship between number of words (nwords) and content word frequency (frequency_CW): _p_ = 7.201e-06, which translates to .000007201. In other words, there is a .0007% chance that we would observe this data if there were no relationship between number of words and content word frequency.
+In this case, the results indicate a significant relationship between number of words (nwords) and content word frequency (frequency_CW): _p_ = 7.201e-06, which translates to .000007201. In other words, there is a .0007% chance that we would observe this data in our sample if there were no relationship between number of words and content word frequency in the larger population.
 
 #### Interpreting the effect size (_r_)
 The correlation value (which is indicated above as "cor"; _r_ = -.203) indicates that a) there is an inverse relationship between number of words and content word frequency, and b) this relationship is fairly weak (Cohen, 1988 suggests that small/weak correlations range from .100 to .299).
@@ -122,6 +124,8 @@ Note that Plonsky & Oswald (2014) suggest the following guidelines for applied l
 
 - Large: .600 - 1.000
 
+### Sample Write-Up
+(this will be added by the end of the week)
 
 ### Other correlation tests
 If your variables do not meet the assumptions of the Pearson product moment correlation, all is not lost! The following correlation coefficents can also be calculated.

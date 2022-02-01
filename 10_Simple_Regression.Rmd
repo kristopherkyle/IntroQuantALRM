@@ -1,7 +1,7 @@
 ---
 title: "Regression"
 author: "Kristopher Kyle"
-date: "Last updated 2022-01-31"
+date: "Last updated 2022-02-01"
 output:
   html_document:
     toc: true
@@ -45,6 +45,10 @@ cor_data <- read.csv("data/correlation_sample.csv", header = TRUE) #read the spr
 summary(cor_data) #get descriptive statistics for the dataset
 ```
 
+```{r}
+library(psych)
+describe(cor_data) #get descriptive statistics
+```
 Our variables of interest (frequency_CW) and number of words (nwords) are both continuous variables, so we meet the first assumption.
 
 Next, we will test the assumption of linearity using a Loess line (in red) and a line of best fit (in blue). These indicate that our data are roughly linear (because the red line mirrors the blue one). Note that this is the same data from the correlation tutorial.
@@ -61,6 +65,12 @@ Looking again at the scatterplot, we see that there are a few outliers. However,
 
 We will check the distribution of the residuals AFTER running the regression (we have to run the regression to get the residuals).
 
+### Preliminary correlation analysis
+See [previous tutorial on correlation](https://kristopherkyle.github.io/IntroQuantALRM/9_Correlations.html) for more details on this preliminary analysis.
+
+```{r}
+cor.test(cor_data$nwords,cor_data$frequency_CW)
+```
 ### Conducting a linear regression
 
 Linear regression is very easy to do in R. We simply use the lm() function:
@@ -113,7 +123,43 @@ library(car)
 qqPlot(model1)
 ```
 ### Example write-up
-(this will be added by the end of the week)
+This study examined the relationship between lexical sophistication (measured as the mean frequency of content words) and writing proficiency (**imperfectly!** measured as number of words per essay) in a corpus of argumentative essays written by L2 users of English. Descriptive statistics are reported in Table 1.
+
+Table 1.  
+Descriptive statistics for indices used in this study
+
+| Index | _n_ | Mean | Standard Deviation | 
+| :------ | :--- | :---- | :--- | 
+| number of words | 480 | 317.65 | 78.28 | 
+| Frequency CW | 480 | 2.72 | 0.11 |
+
+The data met the assumptions of Pearson correlations and linear regressions. Therefore, a Pearson correlation between number of words in each essay and content word frequency to determine the strength of the relationship between the two indices. The results of the Pearson correlation, which indicated a small, negative relationship between the two variables ( _r_ = -0.203, _p_ < .001), are reported in Table 2.
+
+Table 2.  
+Results of the Pearson correlation analysis with number of words
+
+| Index | _n_ | _r_ | _p_ | 
+| :------ | :--- | :---- | :--- | 
+| Frequency CW | 480 | -0.203 | < .001 |
+
+Finally, a linear regression was conducted to determine the degree to which content word frequency could predict the number of words in an essay (as a proxy for proficiency). The results, which are reported in Table 3, indicated that content word frequency explained 4% of the variance in number of words ( _R^2_ = 0.041). See Figure 1 for a visualization of the results.
+
+Table 3.  
+Results of the linear regression analysis
+
+| Coefficients | _R^2_ | Adj _R^2_ | _B_     | SE    | _p_    |
+| :------      | :---  | :----     | :---    | :---  | :---   |
+| (Intercept)  |       |           | 729.93  | 90.92 | < .001 |
+| Frequency CW | 0.041 | 0.039     | -151.42 | 33.37 | < .001 |
+
+```{r, echo = FALSE}
+ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
+  geom_point() +
+  #geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+Figure 1. Predicted versus actual scores
 
 ### Obligatory Stats Joke
 ![from xkcd: https://xkcd.com/1725/](https://imgs.xkcd.com/comics/linear_regression.png)

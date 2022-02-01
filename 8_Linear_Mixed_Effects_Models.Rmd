@@ -2,8 +2,12 @@
 title: "Linear Mixed Effects Models (LME) for Time Series Data "
 author: "Kristopher Kyle"
 date: "updated 01-28-2021"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
@@ -29,7 +33,7 @@ ggplot(data = mydata, aes(x = FTime, y = MLT, group = Time)) +
   geom_boxplot()
 ```
 
-Then, we can get a clearer view by looking at individual trajectories.
+Then, we can get a clearer view by looking at individual trajectories. In the plot below, each line represents a different student.
 
 ```{r}
 library(ggplot2)
@@ -52,7 +56,7 @@ Linear mixed effects models allow us to account for both fixed effects (these ar
 In this tutorial, we are primarily interested in time spent studying English (Time and/or FTime). However, many researchers have highlighted the idea that individuals take varying paths on their way to proficiency, so individual variation may affect our results. This is our random effect, because we want to account for individual variation, but it isn't our primary variable of interest.
 
 ### Assumptions
-Linear mixed effects (lme) models are relatively new (particularly when compared to statistics such as t-tests). They are also particularly flexible. Due to these two issues, there is not a fully accepted consensus as to the assumptions for running an lme. However, the following three assumptions, which are the same for regression models (we will talk about these next week) are as follows:
+Linear mixed effects (lme) models are relatively new (particularly when compared to statistics such as t-tests). They are also particularly flexible. Due to these two issues, there is not a fully accepted consensus as to the assumptions for running an lme. However, the following three assumptions, which are the same for regression models are as follows:
 
 - the relationship between the residuals (the model error for each data point) and the variable being predicted should be linear
 - the residuals should be normally distributed
@@ -156,7 +160,7 @@ These results indicate that there is a significant, positive, medium relationshi
 
 Above, we fit linear models with random intercepts, but fixed slopes. By doing so, we forced the model to assume that all individuals will follow the same slopes (i.e., increase/decrease the number of words per T-unit at the same rate over time). 
 
-LMEs are quite flexible, however, and also allow us to fit more complicated models. For example, we can tell the model to adjust both the intercept (i.e., the starting MLT scores) and the slope (i.e., the rate and direction of change). More complicated models are often more difficult to interpret, but usually will account for more variance than simpler models. In general, we want to use models that optimize explanatory power and simplicity (more on this later).
+LMEs are quite flexible, however, and also allow us to fit more complicated models. For example, we can tell the model to adjust both the intercept (i.e., the starting MLT scores) and the slope (i.e., the rate and direction of change). More complicated models are often more difficult to interpret, but usually will account for more variance than simpler models. In general, we want to use models that optimize BOTH explanatory power and simplicity (more on this later).
 
 Below, we will run a model with random intercepts AND random slopes, and then evaluate whether the more complicated model is reasonably better than the simpler one. We will almost always get a more accurate model when we add complexity, but the comlexity may not always be justified (e.g., it is a lot more difficult to explain a random intercepts and slopes model, and we only want to do so if it significantly increases our explanatory power). Note that we could treat Time either as a categorical variable or as a continuos variable. However, below we will only look at the continuous model.
 

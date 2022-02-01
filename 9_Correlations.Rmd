@@ -1,7 +1,7 @@
 ---
 title: "Correlation"
 author: "Kristopher Kyle"
-date: "Last updated 2022-01-31"
+date: "Last updated 2022-02-01"
 output:
   html_document:
     toc: true
@@ -125,7 +125,33 @@ Note that Plonsky & Oswald (2014) suggest the following guidelines for applied l
 - Large: .600 - 1.000
 
 ### Sample Write-Up
-(this will be added by the end of the week)
+This study examined the relationship between lexical sophistication (measured as the mean frequency of content words) and writing proficiency (**imperfectly!** measured as number of words per essay) in a corpus of argumentative essays written by L2 users of English. Descriptive statistics are reported in Table 1.
+
+Table 1.  
+Descriptive statistics for indices used in this study
+
+| Index | _n_ | Mean | Standard Deviation | 
+| :------ | :--- | :---- | :--- | 
+| number of words | 480 | 317.65 | 78.28 | 
+| Frequency CW | 480 | 2.72 | 0.11 |
+
+The data met the assumptions of a Pearson correlation. Therefore, a Pearson correlation between number of words in each essay and content word frequency to determine the strength of the relationship between the two indices. The results of the Pearson correlation, which indicated a small, negative relationship between the two variables ( _r_ = -0.203, _p_ < .001), are reported in Table 2. A scatterplot of the data (with a line of best fit) is displayed in Figure 1.
+
+Table 2.  
+Results of the Pearson correlation analysis with number of words
+
+| Index | _n_ | _r_ | _p_ | 
+| :------ | :--- | :---- | :--- | 
+| Frequency CW | 480 | -0.203 | < .001 |
+
+```{r, echo = FALSE}
+ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
+  geom_point() +
+  #geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
+```
+
+Figure 1. Relationship between Number of Words and Content Word Frequency
 
 ### Other correlation tests
 If your variables do not meet the assumptions of the Pearson product moment correlation, all is not lost! The following correlation coefficents can also be calculated.

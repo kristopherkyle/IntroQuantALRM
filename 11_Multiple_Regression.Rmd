@@ -1,9 +1,13 @@
 ---
 title: "Multiple Regression"
 author: "Kristopher Kyle"
-date: "Updated 2-9-2021"
-output: html_document
+date: "Updated 2-9-2022"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
+[Back to Homepage](https://kristopherkyle.github.io/IntroQuantALRM/)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
@@ -153,6 +157,7 @@ ggplot(mr_data, aes(y=pred_Score, x = Score)) +
 A perfectly normal distribution of residuals would be when all data points fall perfectly on the line. As we can see, we have some outliers (particularly on the right side of the graph), but the distribution is roughly normal.
 
 ```{r}
+#install.packages("car") #if not already installed
 library(car)
 qqPlot(model2)
 ```
@@ -163,6 +168,7 @@ If we have no theoretical basis for presuming a particular order of importance f
 Below, we will conduct a stepwise regression using the MASS package (don't forget to install it!). Note that the first argument of stepAIC() is a model (e.g., lm(Score ~ frequency_CW + MLC + frequency_FW, data = mr_data)). Here, we are using our first model (model1).
 
 ```{r}
+#install.packages("MASS") #if not already installed
 library(MASS)
 stepwise_model <- stepAIC(model1, direction="both")
 summary(stepwise_model)
@@ -179,6 +185,7 @@ This procedure involves randomly dividing a datset into two pieces (often via a 
 Note that this uses the *caret* package, so don't forget to install it.
 
 ```{r}
+#install.packages("caret") #if not already installed
 library(caret)
 set.seed(1) #do this to ensure reproducibility - otherwise you will get slightly different results each time
 #create random sample based on Score values, training set will be 67% of data
@@ -213,7 +220,7 @@ Cross-validation involves using multiple training and test sets, then averaging 
 
 
 ```{r}
-library(caret)
+#library(caret)
 set.seed(1) #do this to ensure reproducibility - otherwise you will get slightly different results each time
 #create cross-validation parameters
 TenFoldCV <- trainControl(method = "repeatedcv", number = 10,repeats = 10)

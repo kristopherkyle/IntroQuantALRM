@@ -242,7 +242,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Linear Mixed-Effects Models (LME) for Time Series Data</h1>
 <h4 class="author">Kristopher Kyle</h4>
-<h4 class="date">updated 2022-02-08</h4>
+<h4 class="date">updated 2022-02-09</h4>
 
 </div>
 
@@ -267,6 +267,26 @@ summary(mydata)</code></pre>
 ##                     Mean   :3.5   Mean   :4.13   Mean   :11.517   4:9  
 ##                     3rd Qu.:5.0   3rd Qu.:5.00   3rd Qu.:12.906   5:9  
 ##                     Max.   :6.0   Max.   :7.00   Max.   :18.889   6:9</code></pre>
+</div>
+<div id="look-at-descriptive-statistics" class="section level2">
+<h2>Look at descriptive statistics</h2>
+<pre class="r"><code>library(psych)
+#get descriptives for the MLT at each time point. &quot;group1&quot; is Ftime
+describeBy(x=mydata$MLT, group=mydata$FTime, mat=TRUE, digits=3 ) </code></pre>
+<pre><code>##     item group1 vars n   mean    sd median trimmed   mad    min    max  range
+## X11    1      1    1 9  9.697 2.043  9.792   9.697 2.162  6.895 12.750  5.855
+## X12    2      2    1 9 10.364 1.654 10.059  10.364 1.693  8.476 12.824  4.347
+## X13    3      3    1 9 11.474 3.779 10.357  11.474 2.848  8.158 18.250 10.092
+## X14    4      4    1 9 11.404 2.719 10.600  11.404 1.291  8.579 16.182  7.603
+## X15    5      5    1 9 13.321 2.556 13.438  13.321 1.062 10.312 18.889  8.576
+## X16    6      6    1 9 12.843 1.811 11.857  12.843 1.596 10.625 16.100  5.475
+##      skew kurtosis    se
+## X11 0.259   -1.423 0.681
+## X12 0.367   -1.605 0.551
+## X13 0.794   -1.128 1.260
+## X14 0.793   -1.043 0.906
+## X15 0.793   -0.101 0.852
+## X16 0.504   -1.351 0.604</code></pre>
 </div>
 <div id="looking-at-trends-in-the-data-through-visualization" class="section level2">
 <h2>Looking at trends in the data through visualization</h2>
@@ -428,6 +448,20 @@ summary(int_model1.emm)</code></pre>
 <div id="time-as-a-continuous-variable" class="section level3">
 <h3>Time as a Continuous Variable</h3>
 <p>We can also run our analysis with Time as a continuous variable (the distance between each Time value is roughly 4-months). In this case, we will be testing whether the line of best fit is a reasonable approximation of our data. Again, at this point, we are still working with a random intercepts model.</p>
+<p>First, we generate descriptive statistics (treating time as a continuous variable)</p>
+<pre class="r"><code>describe(mydata)</code></pre>
+<pre><code>##              vars  n  mean   sd median trimmed  mad  min   max range  skew
+## Participant*    1 54  5.00 2.61   5.00    5.00 2.97 1.00  9.00  8.00  0.00
+## Time            2 54  3.50 1.72   3.50    3.50 2.22 1.00  6.00  5.00  0.00
+## Score           3 54  4.13 1.21   4.00    4.16 1.48 1.00  7.00  6.00 -0.18
+## MLT             4 54 11.52 2.73  10.98   11.27 2.70 6.89 18.89 11.99  0.74
+## FTime*          5 54  3.50 1.72   3.50    3.50 2.22 1.00  6.00  5.00  0.00
+##              kurtosis   se
+## Participant*    -1.29 0.35
+## Time            -1.33 0.23
+## Score           -0.17 0.17
+## MLT              0.03 0.37
+## FTime*          -1.33 0.23</code></pre>
 <pre class="r"><code>int_model2 &lt;- lmer(MLT~Time + (1 | Participant), data=mydata)
 summary(int_model2) #get model summary</code></pre>
 <pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
@@ -490,9 +524,34 @@ ggplot(mydata, aes(y=MLT, x=Time)) +
 </div>
 <div id="write-up" class="section level3">
 <h3>Write up</h3>
-<p>A linear mixed effects model was run using Time to predict the mean length of T-unit (MLT) in the participant essays. The simpler, random intercepts model was indistinguishable from the random intercepts and slopes model, so it was retained. The results of the analysis indicated that was a significant positive relationship between Time and MLT in the participant essays (p &lt; .001, R2m = .191, R2c = .355).</p>
-<p>Table 1 comprises the estimates, standard errors, t values and p values for the fixed effect of Time. The results indicate that the participants’ wrote longer T-units over the two-year time period, at a rate of approximately .7 words per T-unit at progressive collection points. Approximately 19% of the variance in MLT scores was be explained by Time spent studying English, while approximately 16.5% of the the variance in MLT scores was explained by the random effects (variation across participants).Figure 1 includes plots of the MLT scores for each participant at each collection point with the regression lines (indicated by the dashed line) produced by the model.</p>
-<p>Table 1.<br />
+<p>A linear mixed effects model was run using Time to predict the mean length of T-unit (MLT) in the participant essays. Descriptive statistics for each variable can be found in Table 1.</p>
+<p>Table 1. Descriptive Statistics for Time and MLT</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Index</th>
+<th align="left"><em>n</em></th>
+<th align="left">Mean</th>
+<th align="left">Standard Deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Time</td>
+<td align="left">54</td>
+<td align="left">3.500</td>
+<td align="left">1.720</td>
+</tr>
+<tr class="even">
+<td align="left">MLT</td>
+<td align="left">54</td>
+<td align="left">11.520</td>
+<td align="left">0.11</td>
+</tr>
+</tbody>
+</table>
+<p>A random intercepts model was indistinguishable from the random intercepts and slopes model, so the simpler random intercepts model was retained. The results of the analysis indicated that was a significant positive relationship between Time and MLT in the participant essays (p &lt; .001, R2m = .191, R2c = .355). Table 2 comprises the estimates, standard errors, t values and p values for the fixed effect of Time. The results indicate that the participants’ wrote longer T-units over the two-year time period, at a rate of approximately .7 words per T-unit at progressive collection points. Approximately 19% of the variance in MLT scores was be explained by Time spent studying English, while approximately 16.5% of the the variance in MLT scores was explained by the random effects (variation across participants). Figure 1 includes plots of the MLT scores for each participant at each collection point with the regression lines (indicated by the dashed line) produced by the model.</p>
+<p>Table 2.<br />
 LME model predicting mean length of T-unit</p>
 <table>
 <thead>

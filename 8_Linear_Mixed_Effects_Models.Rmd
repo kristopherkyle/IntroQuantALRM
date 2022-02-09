@@ -1,7 +1,7 @@
 ---
 title: "Linear Mixed-Effects Models (LME) for Time Series Data "
 author: "Kristopher Kyle"
-date: "updated 2022-02-08"
+date: "updated 2022-02-09"
 output:
   html_document:
     toc: true
@@ -28,6 +28,14 @@ mydata <- read.csv("data/RM_sample.csv", header = TRUE)
 #First, we create a new variable that is the categorical version of Time
 mydata$FTime <- factor(mydata$Time)
 summary(mydata)
+```
+
+## Look at descriptive statistics
+
+```{r}
+library(psych)
+#get descriptives for the MLT at each time point. "group1" is Ftime
+describeBy(x=mydata$MLT, group=mydata$FTime, mat=TRUE, digits=3 ) 
 ```
 
 ## Looking at trends in the data through visualization
@@ -142,6 +150,12 @@ summary(int_model1.emm)
 
 We can also run our analysis with Time as a continuous variable (the distance between each Time value is roughly 4-months). In this case, we will be testing whether the line of best fit is a reasonable approximation of our data. Again, at this point, we are still working with a random intercepts model.
 
+First, we generate descriptive statistics (treating time as a continuous variable)
+
+```{r}
+describe(mydata)
+```
+
 ```{r}
 int_model2 <- lmer(MLT~Time + (1 | Participant), data=mydata)
 summary(int_model2) #get model summary
@@ -168,11 +182,19 @@ These results indicate that there is a significant, positive, medium relationshi
 
 ### Write up
 
-A linear mixed effects model was run using Time to predict the mean length of T-unit (MLT) in the participant essays. The simpler, random intercepts model was indistinguishable from the random intercepts and slopes model, so it was retained. The results of the analysis indicated that was a significant positive relationship between Time and MLT in the participant essays (p < .001, R2m = .191, R2c = .355).
+A linear mixed effects model was run using Time to predict the mean length of T-unit (MLT) in the participant essays. Descriptive statistics for each variable can be found in Table 1. 
 
-Table 1 comprises the estimates, standard errors, t values and p values for the fixed effect of Time. The results indicate that the participants’ wrote longer T-units over the two-year time period, at a rate of approximately .7 words per T-unit at progressive collection points. Approximately 19% of the variance in MLT scores was be explained by Time spent studying English, while approximately 16.5% of the the variance in MLT scores was explained by the random effects (variation across participants).Figure 1 includes plots of the MLT scores for each participant at each collection point with the regression lines (indicated by the dashed line) produced by the model.
+Table 1. 
+Descriptive Statistics for Time and MLT
 
-Table 1.  
+| Index | _n_  | Mean   | Standard Deviation | 
+| :---- | :--- | :----  | :---               | 
+| Time  | 54   | 3.500  | 1.720	             | 
+| MLT   | 54   | 11.520	 | 0.11              |
+
+A random intercepts model was indistinguishable from the random intercepts and slopes model, so the simpler random intercepts model was retained. The results of the analysis indicated that was a significant positive relationship between Time and MLT in the participant essays (p < .001, R2m = .191, R2c = .355). Table 2 comprises the estimates, standard errors, t values and p values for the fixed effect of Time. The results indicate that the participants’ wrote longer T-units over the two-year time period, at a rate of approximately .7 words per T-unit at progressive collection points. Approximately 19% of the variance in MLT scores was be explained by Time spent studying English, while approximately 16.5% of the the variance in MLT scores was explained by the random effects (variation across participants). Figure 1 includes plots of the MLT scores for each participant at each collection point with the regression lines (indicated by the dashed line) produced by the model.
+
+Table 2.  
 LME model predicting mean length of T-unit  
 
 | Fixed Effects | Estimate | SE     | _t_     | _p_     |

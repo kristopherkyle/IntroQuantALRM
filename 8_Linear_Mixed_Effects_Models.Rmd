@@ -1,7 +1,7 @@
 ---
 title: "Linear Mixed-Effects Models (LME) for Time Series Data "
 author: "Kristopher Kyle"
-date: "updated 2022-02-03"
+date: "updated 2022-02-08"
 output:
   html_document:
     toc: true
@@ -165,6 +165,36 @@ ggplot(mydata, aes(y=MLT, x=Time)) +
 ```
 
 These results indicate that there is a significant, positive, medium relationship between Time and MLT. The results also indicate that there is a fairly high degree of variability across participants.
+
+### Write up
+
+A linear mixed effects model was run using Time to predict the mean length of T-unit (MLT) in the participant essays. The simpler, random intercepts model was indistinguishable from the random intercepts and slopes model, so it was retained. The results of the analysis indicated that was a significant positive relationship between Time and MLT in the participant essays (p < .001, R2m = .191, R2c = .355).
+
+Table 1 comprises the estimates, standard errors, t values and p values for the fixed effect of Time. The results indicate that the participants’ wrote longer T-units over the two-year time period, at a rate of approximately .7 words per T-unit at progressive collection points. Approximately 19% of the variance in MLT scores was be explained by Time spent studying English, while approximately 16.5% of the the variance in MLT scores was explained by the random effects (variation across participants).Figure 1 includes plots of the MLT scores for each participant at each collection point with the regression lines (indicated by the dashed line) produced by the model.
+
+Table 1.  
+LME model predicting mean length of T-unit  
+
+| Fixed Effects | Estimate | SE     | _t_     | _p_     |
+| :------       | :---     | :----  | :---    | :---    |
+| (Intercept)   | 9.064    | 0.784  | 11.560  | < 0.001 |
+| Time          | 0.701    | 0.177  | 3.960   | < 0.001 |
+
+
+```{r, echo = FALSE}
+library(dplyr)
+#add predicted values to dataframe
+mydata <- mydata %>% mutate(int_model2_pred = predict(int_model2,re.form = ~ (1 | Participant)))
+
+ggplot(mydata, aes(y=MLT, x=Time)) +
+  facet_wrap(~ Participant) + 
+  geom_point(aes(color=Participant), show.legend = FALSE) + 
+  geom_line(aes(color=Participant), show.legend = FALSE) +
+  geom_line(aes(y=int_model2_pred), linetype=2) +
+  scale_y_continuous()
+```
+
+Figure 1. Predicted and actual MLT scores over time spent studying English
 
 #### Random intercepts and random slopes
 

@@ -153,6 +153,13 @@ We can also run our analysis with Time as a continuous variable (the distance be
 First, we generate descriptive statistics (treating time as a continuous variable)
 
 ```{r}
+#load date and packages if not already loaded
+#mydata <- read.csv("data/RM_sample.csv", header = TRUE)
+#library(MuMIn)
+#library(lattice)
+#library(lmerTest)
+#library(ggplot2)
+#library(psych)
 describe(mydata)
 ```
 

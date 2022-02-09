@@ -449,7 +449,14 @@ summary(int_model1.emm)</code></pre>
 <h3>Time as a Continuous Variable</h3>
 <p>We can also run our analysis with Time as a continuous variable (the distance between each Time value is roughly 4-months). In this case, we will be testing whether the line of best fit is a reasonable approximation of our data. Again, at this point, we are still working with a random intercepts model.</p>
 <p>First, we generate descriptive statistics (treating time as a continuous variable)</p>
-<pre class="r"><code>describe(mydata)</code></pre>
+<pre class="r"><code>#load date and packages if not already loaded
+#mydata &lt;- read.csv(&quot;data/RM_sample.csv&quot;, header = TRUE)
+#library(MuMIn)
+#library(lattice)
+#library(lmerTest)
+#library(ggplot2)
+#library(psych)
+describe(mydata)</code></pre>
 <pre><code>##              vars  n  mean   sd median trimmed  mad  min   max range  skew
 ## Participant*    1 54  5.00 2.61   5.00    5.00 2.97 1.00  9.00  8.00  0.00
 ## Time            2 54  3.50 1.72   3.50    3.50 2.22 1.00  6.00  5.00  0.00

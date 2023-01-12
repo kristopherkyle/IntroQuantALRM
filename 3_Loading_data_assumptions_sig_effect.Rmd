@@ -1,11 +1,11 @@
 ---
 title: "Loading data, more visualization, assumptions, significance, effect size"
 author: "Kristopher Kyle"
-date: "2019-02-04; revised 2022-01-20"
+date: "2019-02-04; revised 2023-01-12"
 output:
   html_document:
-    toc: true
-    toc_float: true
+    toc: false
+    toc_float: false
 ---
 
 ```{r setup, include=FALSE}
@@ -34,6 +34,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Part I: Loading data, more practice with visualizing data
 
+## Description of Data
+The data represents a sample of a simplified (and adapted) version of the meta data for the written section of the <a href = "https://language.sakura.ne.jp/icnale/" target="_blank">International Corpus Network of Asian Learners of English</a>. This corpus includes argumentative essays written on two prompts by college students for a range of countries in Asia. As we see below, this file includes a number of variables including a participant identifier, nationality of the participant, their score on a <a href="https://www.lextutor.ca/tests/vst/index.php?mode=test" target="_blank">vocabulary size test (VST)</a>, and their English proficiency.
+
 ## Loading data
 In previous tutorials, we have used dataframes that are part of the R base package or are part of ggplot2. Here, we will load data from a spreadsheet that is formatted as a comma separated values (.csv) document.
 
@@ -43,7 +46,7 @@ Our second step will be to download the [target .csv file](https://raw.githubuse
 
 Third, with our new R script open in RStudio, we will click on "Session" in the toolbar and "Set Working Directory"" to "Source File Location". This will let RStudio know where to look for your file(s).
 
-Finally, we will load our target .csv file ("ICNALE_500_simple.csv") as a dataframe (and in this case we will call that dataframe "fundata"). NOTE- click on the "code" button to see the code used in each section. For this page, the default is for the code to be hidden - try to write the code on your own before checking the answer.
+Finally, we will load our target .csv file ("ICNALE_500_simple.csv") as a dataframe (and in this case we will call that dataframe "fundata"). 
 
 ```{r}
 fundata <- read.csv("data/ICNALE_500_simple.csv", header = TRUE) #this presumes that the .csv file is in a subfolder entitled "data"

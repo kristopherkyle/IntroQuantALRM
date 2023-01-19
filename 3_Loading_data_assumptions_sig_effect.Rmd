@@ -149,7 +149,7 @@ __mode__ The mode is the observed value that occurs most often.
 To get the mode, we can simply count the frequency of each item in the list. The most frequent item is the mode. In our sample list, 7 occurs more than any other number (in this case, 3 times) and is therefore the mode. Base R does not have a function to calculate the mode (though there are packages that can be used for this purpose). Because we won't need to calculate the mode for any analyses this term, we won't worry about this too much.
 
 ## Variance and standard deviation
-The definitions below may seem a bit technical. If that is the case, don't worry to much. We will discuss these (particularly standard deviation) in class.
+The definitions below may seem a bit technical. If that is the case, don't worry too much. We will discuss these (particularly standard deviation) in class.
 
 __population variance__ The variance in a set of observed values indicate how these values are distributed. To calculate the variance, we first subtract the mean from each of our observed values and square each of these values. We then calculate the mean for the squared values.
 
@@ -214,7 +214,7 @@ ggplot(fundata, (aes(sample=VST))) + #note that the sample is the variable we ar
 In this case, we see that many of our observed data points fall above or below the theoretical line. This is further indication that our data is not normally distributed
 
 ### Using a statistical test to check for normality
-However, we can also test to see the degree to which the observed distribution differs from the theoretical one using the Shapiro-Wilk test. In this case, if the _p_ value is small (e.g., below .05), then we can assume that our observed distribution significantly differs from a normal distribution (i.e., it is not normal).
+However, we can also test to see the degree to which the observed distribution differs from the theoretical one using the Shapiro-Wilk test. In this case, if the _p_ value is small (e.g., below .05), then we can assume that our observed distribution significantly differs from a normal distribution (i.e., it is not normal). Note that R often uses scientific notation for very small numbers. If you see a number followed by "e" and a negative number _n_, then you simply move the decimal place to the left _n_ times. For example, 5.151e-3 should be interpreted as .005151.
 
 ```{r}
 shapiro.test(fundata$VST)
@@ -268,7 +268,7 @@ To check these probabilities precisely, we can use the pnorm() function.
 pnorm(34, mean = 40, sd = 5)
 ```
 
-The pnorm() function indicates that 11.5% of students (_p_ = .115) scored lower than our randomly selected student. In other words, there is only an 11.5% chance that we would observe a smaller score from a randomly selected student. Conversely, this means that 88.5% (0.885) students scored higher than the randomly selected student.
+The pnorm() function indicates that 11.5% of students (_p_ = .115) scored lower than our randomly selected student. In other words, there is only an 11.5% chance that we would observe a smaller score from a randomly selected student. Conversely, this means that there is an 88.5% (0.885) chance thqt we would observe a higher score from a randomly selected student.
 
 ### Class data as a sample from a larger population
 
@@ -295,11 +295,18 @@ mean(rnorm(100, mean = 40, sd = 5))
 
 As we can see, the range of mean scores for the randomly sampled groups is closer to the population mean when the sample size is larger. When the sample size is 10, the mean scores can range over a point from the mean; when the sample size is 100, the mean scores are less than .5 point from the population mean. Note that if our standard deviation was wider, then these differences would be more pronounced.
 
+This range will be even smaller if we take a larger sample (e.g., n=1000):
+
+```{r}
+set.seed(124) #set random number generator seed
+mean(rnorm(1000, mean = 40, sd = 5)) #get random sample of 100 data points from a normal distribution with a mean of 40 and an sd of 5; get the mean score
+mean(rnorm(1000, mean = 40, sd = 5))
+mean(rnorm(1000, mean = 40, sd = 5))
+```
+
 Importantly, if we randomly sample a population many times (e.g., 1,000) with a particular sample size, we can get a probability distribution of the mean scores. With this distribution, we can determine the probability that, given a random sample of _n_ participants from a population with a particular distribution, we would get a particular mean score.  
 
 ### Statistical significance with two groups (introduction)
-
-START HERE!!!
 
 In (slightly) more complex situations, we might want to know whether one group of students (whose teacher used a new fancy vocabulary instruction method) earned higher vocabulary test scores than a second group of students (whose teacher used a boring old method of vocabulary instruction). The question we will ask (statistically) is the probability that the mean VST scores from the two groups could have come from the same population (i.e., students who studied vocabulary) OR if there is something special about one of the groups. We do this by checking the degree to which the mean scores could overlap in a repeated random sample from each group of observed scores (the actual calculation is slightly more complicated than this, but not much).
 

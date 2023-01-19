@@ -344,3 +344,5 @@ ggplot(distr, aes(x=x, y=density)) +
 ```
 
 To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 5). So, Cohen's D = (|-5/5| = 1.00), which is a large effect (according to Cohen, 1988). 
+
+More soon!

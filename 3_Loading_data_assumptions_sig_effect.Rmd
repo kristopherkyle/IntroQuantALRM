@@ -1,7 +1,7 @@
 ---
 title: "Loading data, more visualization, assumptions, significance, effect size"
 author: "Kristopher Kyle"
-date: "2019-02-04; revised 2023-01-12"
+date: "2019-02-04; revised 2023-01-18"
 output:
   html_document:
     toc: true
@@ -227,19 +227,19 @@ Each statistical test has a variety of assumptions. As we learn about different 
 
 ## Significance and Effect Size
 
-In quantitative research, we want to determine the probability that our observations (e.g., relationships between two variables or differences between groups) are random. As we will see below, probability estimates are inextricably connected to sample size. Accordingly, we also want to know how large the differences between the two populations are (via an effect size).  
+In quantitative research, we want to determine the probability that our observations (e.g., relationships between two variables or differences between groups) are due to chance (or, alternatively, are due to something such as a particular teaching method). As we will see below, probability estimates are inextricably connected to sample size. Accordingly, we also want to know how large the differences between the two populations are or how strong the relationship between two variables are (via an effect size).  
 
 ## Probability and Statistical Significance
-Statistical significance is inherently tied to probability. In this course we will talk about a number of (relatively) complicated methods for determining the probability of observing a particular result, but in this tutorial we will keep things reasonably simple. In real research, for example, we might want to know whether vocabulary test scores are significantly different between two groups of students (who received different instructional methods, were in different educational context, had different L1s, etc.). We will get to that issue soon enough, but for now we are going to examine a simpler issue. Given a particular population (lets say a group of intermediate language learners at a particular institution), what is the probability that a student will earn a particular score?
+Statistical significance is inherently tied to probability. In this course we will talk about a number of (relatively) complicated methods for determining the probability of observing a particular result, but in this tutorial we will keep things reasonably simple. In real research, for example, we might want to know whether vocabulary test scores are significantly different between two groups of students (who received different instructional methods, were in different educational context, had different L1s, etc.). We will get to that issue soon enough, but for now we are going to examine a simpler issue. Given a particular population (lets say a group of intermediate language learners at a particular institution), what is the probability that a particular student will earn a particular score?
 
-Let us assume for a moment that the scores are normally distributed with a range from 30 to 50, a mean of 40, and a standard deviation of 3.
+Let us assume for a moment that the scores are normally distributed with a range from 30 to 50, a mean of 40, and a standard deviation of 5.
 
 ```{r}
 #don't worry too much about this code - see the plot
 library(dplyr)
 library(ggplot2)
 distr <- data.frame(x=seq(30, 50, length=300)) %>%
-  mutate( density = dnorm(x, mean=40, sd=3))
+  mutate( density = dnorm(x, mean=40, sd=5))
 
 ggplot(distr, aes(x=x, y=density)) +
   geom_line() +
@@ -247,13 +247,13 @@ ggplot(distr, aes(x=x, y=density)) +
   theme_bw()
 ```
 
-Now, lets say that we have a student (Student A) who earns a score of 34 on the test. By looking at a density plot, we can see that only a very small proportion of students who scored lower than Student A and a large proportion of students who scored higher.
+One thing that we can examine is the probability that a student in the target population will receive a particular VST score. For example, what is the probability that a student randomly selected from our sample population would earn a 34 on the VST? By looking at a density plot, we can see that there is a very small chance that we would randomly select a smaller score than 34 and a much larger chance that we would randomly select a score higher than 34. 
 
 ```{r}
 #don't worry too much about this code - see the plot
 distr <- data.frame(x=seq(30, 50, length=300)) %>%
-  mutate(density = dnorm(x, mean=40, sd=3),
-          group = ifelse(x<=34, 'Worse score than student A','Better score than student A'))
+  mutate(density = dnorm(x, mean=40, sd=5),
+          group = ifelse(x<=34, 'Worse score than 34','Better score than 34'))
 
 ggplot(distr, aes(x=x, y=density, fill=group)) +
   geom_line() +
@@ -261,24 +261,53 @@ ggplot(distr, aes(x=x, y=density, fill=group)) +
   theme_bw()
 ```
 
-To check this proportion precisely, we can use the pnorm() function.
+To check these probabilities precisely, we can use the pnorm() function.
 
 ```{r}
 #don't worry too much about this code
-pnorm(34, mean = 40, sd = 3)
+pnorm(34, mean = 40, sd = 5)
 ```
 
-The pnorm() function indicates that 2.275% of students (.02275) scored lower than Student A. Conversely, this means that 97.72% (0.9772) students scored higher than Student A.
+The pnorm() function indicates that 11.5% of students (_p_ = .115) scored lower than our randomly selected student. In other words, there is only an 11.5% chance that we would observe a smaller score from a randomly selected student. Conversely, this means that 88.5% (0.885) students scored higher than the randomly selected student.
 
-First, this tells us that Student A scored particularly poorly on the vocabulary test in comparison to the rest of the population. For our purposes in this course, it more importantly tells us that if we were to randomly select a students test score from the larger sample, there is only a 2.275% chance that we would find a score of 33 (or lower).
+### Class data as a sample from a larger population
 
-### Statistical significance with two groups
+In classic quantitative research, we are rarely interested in what a single student does, rather, we tend to be interested in what groups of students tend to do. When designing studies, we take a sample of students from a population and then measure particular characteristics of the sample.
 
-In (slightly) more complex situations, we might want to know whether one group of students (whose teacher used a new fancy vocabulary instruction method) earned higher vocabulary test scores than a second group of students (whose teacher used a boring old method of vocabulary instruction). The question we will ask (statistically) is the probability that the distribution of scores of the two groups could represent a single population (i.e., students who received some vocabulary instruction). If the distribution of scores (and the means) are very similar (and/or the number of observations are low, giving us a very fuzzy picture of the distribution), the probability that they could represent a single population will be high (i.e., approaching 1.0). If the distribution of scores (and the means) are increasingly different (and/or the number of observations are high, giving us a clearer picture of the distributions), the probability that they could represent a single population will be low (i.e., approaching .05).
+It is important to note that the characteristics of our samples will not necessarily perfectly reflect the characteristics of our population (due to sampling error). The larger the sample we take, however, the more likely our sample will reflect the population characteristics.
 
-If a statistical test that measures whether two datasets represents the same population (e.g., a T-test) indicates that the p-value (probability value) is .03, this means that there is only a 3% chance that the datasets represent the same population. In other words, there is a 97% chance that one teaching method is better than the other.
+So, if we sample ten students from our vocabulary learning population (which has a mean score of 40) multiple times (we will do this three times below), we can expect to get a wider range of mean scores than if we sample 100 students from our population (we will do this three times below as well).
+
+```{r}
+set.seed(124) #set random number generator seed
+mean(rnorm(10, mean = 40, sd = 5)) #get random sample of 10 data points from a normal distribution with a mean of 40 and an sd of 5; get the mean score
+mean(rnorm(10, mean = 40, sd = 5))
+mean(rnorm(10, mean = 40, sd = 5))
+```
+
+
+```{r}
+set.seed(124) #set random number generator seed
+mean(rnorm(100, mean = 40, sd = 5)) #get random sample of 100 data points from a normal distribution with a mean of 40 and an sd of 5; get the mean score
+mean(rnorm(100, mean = 40, sd = 5))
+mean(rnorm(100, mean = 40, sd = 5))
+```
+
+As we can see, the range of mean scores for the randomly sampled groups is closer to the population mean when the sample size is larger. When the sample size is 10, the mean scores can range over a point from the mean; when the sample size is 100, the mean scores are less than .5 point from the population mean. Note that if our standard deviation was wider, then these differences would be more pronounced.
+
+Importantly, if we randomly sample a population many times (e.g., 1,000) with a particular sample size, we can get a probability distribution of the mean scores. With this distribution, we can determine the probability that, given a random sample of _n_ participants from a population with a particular distribution, we would get a particular mean score.  
+
+### Statistical significance with two groups (introduction)
+
+START HERE!!!
+
+In (slightly) more complex situations, we might want to know whether one group of students (whose teacher used a new fancy vocabulary instruction method) earned higher vocabulary test scores than a second group of students (whose teacher used a boring old method of vocabulary instruction). The question we will ask (statistically) is the probability that the mean VST scores from the two groups could have come from the same population (i.e., students who studied vocabulary) OR if there is something special about one of the groups. We do this by checking the degree to which the mean scores could overlap in a repeated random sample from each group of observed scores (the actual calculation is slightly more complicated than this, but not much).
+
+If the probability is high that the mean VST scores came from the same larger group (i.e., individuals who are in a language course), then we might say that the teaching method didn't make a difference in VST scores. If the probability that the mean scores could come from the same distribution of scores is low (usually this is set to a probability or _p_ value of .05), then we might say that the teaching method affected the scores. 
 
 There are many caveats and more complicated situations that we will tackle when we look at each test covered in this course. Stay tuned.
+
+As we noted above, the larger the sample size is, the more confident we can be that the sample mean represents the population mean. 
 
 ## Effect sizes
 A very important limitation of tests of statistical significance is that they are affected by both the sample size and the size of the observed differences (i.e., the effect). When the sample size is large enough, almost all differences between two groups will be considered statistically significant (due to the Central Limit Theorem).
@@ -288,15 +317,15 @@ Effect sizes, however, are not affected by sample size and simply indicate the d
 ### Cohen's D
 Cohen's D is calculated as the |((mean of group A - mean of group B)/pooled standard deviation)|. In short, this tells us how many standard deviations apart the means for the two groups are.
 
-Below, we have two samples (lets call them two classes with VST scores). The red line represents the distribution of VST scores in our previously discussed class (mean=40, sd = 3). The blue line represents the distribution of VST scores in an imaginary, high achieving class (mean = 45, sd = 3).
+Below, we have two samples (lets call them two classes with VST scores). The red line represents the distribution of VST scores in our previously discussed class (mean=40, sd = 5). The blue line represents the distribution of VST scores in an imaginary, high achieving class (mean = 45, sd = 5).
 
 ```{r}
 #don't worry too much about this code - see the plot
 distr <- data.frame(x=seq(30, 50, length=300)) %>%
-  mutate( density = dnorm(x, mean=40, sd=3))
+  mutate( density = dnorm(x, mean=40, sd=5))
 
 distr2 <- data.frame(x=seq(35, 55, length=300)) %>%
-  mutate( density = dnorm(x, mean=45, sd=3))
+  mutate( density = dnorm(x, mean=45, sd=5))
 
 ggplot(distr, aes(x=x, y=density)) +
   geom_line(color = "red") +
@@ -307,4 +336,4 @@ ggplot(distr, aes(x=x, y=density)) +
   
 ```
 
-To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 3). So, Cohen's D = (|-5/3| = 1.66), which is a large effect (according to Cohen, 1988). 
+To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 5). So, Cohen's D = (|-5/5| = 1.00), which is a large effect (according to Cohen, 1988). 

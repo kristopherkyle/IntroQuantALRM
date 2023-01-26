@@ -1,7 +1,7 @@
 ---
 title: "Two independent samples"
 author: "Kristopher Kyle"
-date: "last updated 2022-01-23"
+date: "last updated 2023-01-26"
 output:
   html_document:
     toc: true
@@ -47,7 +47,7 @@ When using an inferential statistic to determine whether a difference exists bet
 
 As alluded to in the previous paragraph, a probability value (**p-value**) indicates the probability that two distributions of data (e.g., highway fuel efficiency for midsize vehicles and highway fuel efficiency for pickups) could actually come from the same distribution. If that probability is at or below a particular threshold (referred to as the **alpha** or **α** value), we consider the two distributions to be significantly different. In social science research, we commonly set **α** to _p_ = .05. As a reminder, _p_ = .05 means that there is only a 5% chance that the two observed distributions could actually come from the same distribution. In less precise, but perhaps easier to grasp terms, _p_ = .05 means that there is only a 5% chance that there are no differences across two groups with regard to a particular characteristic.
 
-It is important to note that the larger our samples are, the more sure we can be about how well the distributions in our samples reflect the overall population distribution. This means that the larger our studies are (with regard to participants and/or observations), the more likely we are to get a small _p_ value. In other words, there is a strong link between sample size and _p_ value.
+It is important to note that the larger our samples are, the more sure we can be about how well the distributions (and specifically, the mean score) in our samples reflect the overall population distribution. This means that the larger our studies are (with regard to participants and/or observations), the more likely we are to get a small _p_ value. In other words, there is a strong link between sample size and _p_ value.
 
 Accordingly, we also need to use a way of measuring the differences of two groups that is independent of sample size. We refer to this type of measurement as an **effect size**.
 
@@ -88,16 +88,17 @@ summary(mydata)
 In addition to visualizing data, getting descriptive statistics can be helpful in understanding the nature of your dataset. Below we get descriptive statistics for our entire dataset, then we split our dataset into two prompts, and get descriptives statistics for each.
 
 ``` {r}
-library(psych)
-library(dplyr)
+#The first time you use the psych and dplyr libraries, you will need to install them:
+#install.packages("psych")
+#install.packages("dplyr")
+library(psych) #many useful functions
+library(dplyr) #helps us sort and filter datasets
 describe(mydata) #get descriptive statistics
 ```
 
 **Prompt A**
 
 ```{r}
-#load dplyr package, which helps us manipulate datasets:
-library(dplyr)
 #create a new dataframe that includes only responses to Prompt A:
 promptA <- mydata %>% filter(Prompt == "A")
 describe(promptA)
@@ -205,8 +206,7 @@ Next, we will check the effect size to examine how large the difference in numbe
 
 
 ``` {r}
-#install.packages("psych") #install this package if needed
-library(psych)
+#library(psych)
 cohen.d(mydata,"Prompt") #this will generate results for all variables in the data
 ```
 

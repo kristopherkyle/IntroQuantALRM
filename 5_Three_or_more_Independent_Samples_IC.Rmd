@@ -1,7 +1,7 @@
 ---
 title: "One Way ANOVA"
 author: "Kristopher Kyle"
-date: "(updated 1/22/2021)"
+date: "last updated 2023-01-26"
 output: html_document
 ---
 
@@ -106,6 +106,7 @@ To determine whether any differences exist, we create a model called "anova_mode
 
 
 ```{r}
+#install.packages("lsr") #install the lsr package if you haven't already
 library(lsr)
 anova_model <- aov(L1_Word_Reaction_Time~Proficiency, data = mydata)
 summary(anova_model)
@@ -175,6 +176,7 @@ welch_model <- oneway.test(L1_Word_Reaction_Time~Proficiency, data = mydata,var.
 print(welch_model)
 ```
 ```{r}
+#install.packages("userfriendlyscience") #install this if you haven't yet
 library(userfriendlyscience)
 posthocTGH(mydata$Proficiency, y = mydata$L1_Word_Reaction_Time)
 ```
@@ -190,6 +192,7 @@ kruskal.test(L1_Word_Reaction_Time~Proficiency, data = mydata)
 One option for pairwise comparisons with the Kruskal- Wallis test is the Dunn test:
 
 ```{r}
+#install.packages("FSA") #install this if you haven't yet
 library(FSA)
 dunnTest(L1_Word_Reaction_Time~Proficiency, data = mydata, method = "bh")
 ```

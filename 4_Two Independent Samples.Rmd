@@ -184,7 +184,7 @@ ggplot(data = mydata) +
   geom_boxplot(mapping = aes(x = Prompt, y = Nwords,color = Prompt))
 ```
 
-A second (arguably way cooler) way to visualize the data is with violin plots. A violin plot is similar to a boxplot except that the distribution of the data is represented more precisely. If you look at one side of the violin plot (and rotate it 180 degrees) it will resemble the density plots that we made above. In the plot below, we have created boxplots inside the violin plots.
+A second (arguably way cooler) way to visualize the data is with violin plots. A violin plot is similar to a boxplot except that the distribution of the data is represented more precisely. If you look at one side of the violin plot (and rotate it 90 degrees) it will resemble the density plots that we made above. In the plot below, we have created boxplots inside the violin plots.
 
 ```{r}
 ggplot(data = mydata) + 

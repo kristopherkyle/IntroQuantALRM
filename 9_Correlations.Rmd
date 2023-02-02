@@ -1,7 +1,7 @@
 ---
 title: "Correlation"
 author: "Kristopher Kyle"
-date: "Last updated 2022-02-01"
+date: "Last updated 2023-02-02"
 output:
   html_document:
     toc: true
@@ -159,7 +159,7 @@ If your variables do not meet the assumptions of the Pearson product moment corr
 #### Ordinal data: Spearman's Rho and Kendall's Tau
 If your data violates the assumptions of bivariate normality, includes ordinal variables (and/or continous ones), or has a curvilinear relationship (but that still generally follows an upward or downward trend), you can use Spearman's Rho or Kendall's Tau. If you have a lot of data points with the same score, Kendall's Tau is preferred.
 
-Below, we will repeat our analyses above, but this time with the two parametric tests.
+Below, we will repeat our analyses above, but this time with the two non-parametric tests.
 
 ```{r}
 cor.test(cor_data$nwords,cor_data$frequency_CW,method = ("spearman"))

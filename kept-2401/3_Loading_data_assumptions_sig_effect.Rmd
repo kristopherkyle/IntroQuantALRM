@@ -68,74 +68,32 @@ Lets apply what we learned in the last tutorial to this new data. Don't forget t
 
 ```{r, results = "hide"}
 library(ggplot2)
-library(viridis) #color-friendly palettes
 ```
 
 ### Scatterplots
 First, lets create a scatterplot with a line of best fit to examine the relationship between VST (y-axis) and Proficiency_Number (x-axis). **What does the scatterplot indicate about the relationship between VST scores and Proficiency?**
 
 ```{r}
-g1 <- ggplot(data = fundata) +
-  geom_point(mapping = aes(x = Proficiency_Number, y = VST)) +
-  geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm) +
-  scale_color_viridis(discrete = TRUE) +
-  labs(
-    x = "Proficiency_Number",
-    y = "VST",
-    title = "Relationship between Proficiency Number and VST")
-
-#print(g1)
-```
-
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # this is for the plot's alt text is correctly displayed in the HTML
-
-cat('<img src="plot1.png" alt="Scatterplot with black dots showing individual scores by proficiency levels and VST scores. A blue line rises from the bottom left to the top right.">')
+ggplot(data = fundata) + #this line indicates my dataset
+  geom_point(mapping = aes(x = Proficiency_Number, y = VST)) + #this line sets the x and y axis
+  geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm)
 ```
 
 Now try to make the following plot, which shows the data by nationality (hint, I also used geom_jitter()).
 
 ```{r}
-g2<- ggplot(data = fundata) + #this line indicates my dataset
+ggplot(data = fundata) + #this line indicates my dataset
   geom_jitter(mapping = aes(x = Proficiency_Number, y = VST, color = Nationality)) + #this line sets the x and y axis
-  geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm) +
-  scale_color_viridis(discrete = TRUE) +
-  labs(
-    x = "Proficiency_Number",
-    y = "VST",
-    title = "Relationship between Proficiency Number and VST")
-
-#print(g2)
+  geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm)
 ```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot2.png", plot = g2, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot2.png" alt="Scatterplot with colored dots showing individual scores from various nationalities, across proficiency levels and VST scores. A blue line rises from the bottom left to the top right.">')
-```
-
 
 Now, lets look at the trends by creating a different scatterplot for each (note that ncol = 3). **What do these scatterplots tell us about the relationship between VST scores and Proficiency across L1 groups/learning environments?**
 
 ```{r}
-g3 <- ggplot(data = fundata) + #this line indicates my dataset
+ggplot(data = fundata) + #this line indicates my dataset
   geom_jitter(mapping = aes(x = Proficiency_Number, y = VST, color = Nationality)) + #this line sets the x and y axis
   geom_smooth(mapping = aes(x = Proficiency_Number, y = VST), method = lm) +
-  facet_wrap(~ Nationality, ncol = 3) +
-  scale_color_viridis(discrete = TRUE) +
-  labs(
-    x = "Proficiency_Number",
-    y = "VST",
-    title = "Relationship between Proficiency Number and VST across Nationalities"
-  )
-
-#print(g3)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # this is for the plot's alt text is correctly displayed in the HTML
-
-cat('<img src="plot3.png" alt="Grid of scatterplots showing the relationship between VST scores and proficiency numbers for different nationalities. Each plot represents a nationality with VST and proficiency number. Color-coded points per plot, with blue trend lines varying in slope but all rising from bottom left to top right, reflecting diverse distributions across nationalities.">')
+  facet_wrap(~ Nationality, ncol = 3)
 ```
 
 ### Boxplots
@@ -143,42 +101,16 @@ cat('<img src="plot3.png" alt="Grid of scatterplots showing the relationship bet
 Now, lets treat proficiency as a categorical variable. Create a graph with boxplots that shows the range of VST scores (y-axis) by Proficiency_CEFR (x-axis).
 
 ```{r}
-g4<- ggplot(data = fundata) + 
-  geom_boxplot(mapping = aes(x = Proficiency_CEFR, y = VST)) +
-  labs(
-    x = "Proficiency_CEFR",
-    y = "VST",
-    title = "VST Distribution by Proficiency Level"
-  )
-
-#print(g4)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot4.png", plot = g4, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot4.png" alt="Boxplots displaying the distribution of VST scores across CEFR proficiency levels A2_0, B1_1, B1_2, and B2_0. Each boxplot represents a different level, showing the median, interquartile range, and outliers.">')
+ggplot(data = fundata) + 
+  geom_boxplot(mapping = aes(x = Proficiency_CEFR, y = VST))
 ```
 
 Now, lets remove the outliers in our base plot, and add the actual data points to the boxplot (vary the points by nationality).
 
 ```{r}
-g5<- ggplot(data = fundata) + 
+ggplot(data = fundata) + 
   geom_boxplot(mapping = aes(x = Proficiency_CEFR, y = VST), outlier.shape = NA) +
-  geom_jitter(mapping = aes(x = Proficiency_CEFR, y = VST, color = Nationality), width = 0.2)+
-  scale_color_viridis(discrete = TRUE)+
-  labs(
-    x = "Proficiency_CEFR",
-    y = "VST",
-    title = "VST Distribution by Proficiency Level")
-
-#print(g5)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot5.png", plot = g5, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot5.png" alt="Boxplots displaying the distribution of VST scores across CEFR proficiency levels A2_0, B1_1, B1_2, and B2_0, with actual score points jittered around each box to avoid overlapping. Color-coded points by nationality representing different nationalities. The boxplots show the median, interquartile ranges, and the range of the scores without outliers.">')
+  geom_jitter(mapping = aes(x = Proficiency_CEFR, y = VST, color = Nationality), width = 0.2)
 ```
 
 # Part II: Assumptions, significance, and effect size
@@ -249,46 +181,23 @@ In a normal distribution, the median and the mean values will be the same, and ~
 
 ```{r}
 library(ggplot2)
-
 #don't worry too much about this code - take a look at the plot
-g6<- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
   stat_function(fun = dnorm, n = 500, args = list(mean = 0, sd = 1)) + ylab("") + xlab("VST  (but not really - this is too perfect)") +
-  scale_y_continuous(breaks = NULL)+
-  labs(
-    title = "Normal Distribution Curve"
-  )
-
-#print(g6)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot6.png", plot = g6, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot6.png" alt="Standard normal distribution curve, centered on zero, with data points following the symmetric bell-shaped pattern.">')
+  scale_y_continuous(breaks = NULL)
 ```
 
 One way that we can check the degree to which our data is normally distributed is to check whether its distribution is similar to a perfectly normal distribution. In the plot below, the blue line represents a normal distribution with the mean and standard deviation of VST scores. The red line represents the actual distribution of VST scores.
 
 ```{r}
 #This code may be useful in the future, but don't worry about it too much right now.
-g7<- ggplot(fundata, aes(x = VST)) + 
-  geom_density(aes(color = "Density")) +  #Assigning a name to the color aesthetic
-  # geom_histogram(aes(y = ..density.., fill = "Histogram"), binwidth = 3) +
-  stat_function(fun = dnorm, n = 500, args = list(mean = mean(fundata$VST), sd = sd(fundata$VST)), aes(color ="Normal Curve")) +
+ggplot(fundata, aes(x=VST)) + 
+  geom_density(color = "red") +
+  #geom_histogram(aes(y=..density..), color = "black", binwidth = 3) +
+  stat_function(fun = dnorm, n = 500, args = list(mean = mean(fundata$VST), sd = sd(fundata$VST)), color = "blue") +
   ylab("") +
   xlab("VST") +
-  scale_y_continuous(breaks = NULL) +
-  scale_color_viridis(discrete = TRUE) +
-  labs(
-    title = "Density and Normal Distribution of VST Scores")
-
-#print(g7)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot7.png", plot = g7, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot7.png" alt="Plot showing two curves over a range of VST scores. The first yellow curve is the normal distribution based on the mean and standard deviation of the VST scores. The second purple curve represents the density of actual VST scores, showing where scores are most concentrated.">')
+  scale_y_continuous(breaks = NULL)
 ```
 
 It appears as though our data is not normally distributed (the red line that represents the actual data doesn't look very much like the blue line, which represents a normal distribution). 
@@ -297,19 +206,9 @@ Another way we can visually check our distribution is to use qq plots. If our da
 
 ```{r}
 #don't worry too much about this code for now
-g8<- ggplot(fundata, (aes(sample=VST))) + #note that the sample is the variable we are examinining
+ggplot(fundata, (aes(sample=VST))) + #note that the sample is the variable we are examinining
   stat_qq() + #this adds the points
-  stat_qq_line() + #this adds the theoretical line
-  labs(
-    title = "Q-Q Plot of VST")
-
-#print(g8)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot8.png", plot = g8, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot8.png" alt="Q-Q plot comparing the distribution of VST scores against a theoretical normal distribution. Data points are plotted as black dots. A line represents the expected quantiles if the data were normally distributed.">')
+  stat_qq_line() #this adds the theoretical line
 ```
 
 In this case, we see that many of our observed data points fall above or below the theoretical line. This is further indication that our data is not normally distributed
@@ -342,23 +241,10 @@ library(ggplot2)
 distr <- data.frame(x=seq(30, 50, length=300)) %>%
   mutate( density = dnorm(x, mean=40, sd=5))
 
-g9<- ggplot(distr, aes(x=x, y=density)) +
+ggplot(distr, aes(x=x, y=density)) +
   geom_line() +
   geom_area() +
-  theme_bw() +
-  labs(
-    x = "Score",
-    y = "Density",
-    title = "Normal Distribution of Scores")
-
-#print(g9)
-```
-
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot9.png", plot = g9, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot9.png" alt="This is a plot representing the normal distribution of scores. The area under the curve is shaded, indicating the probability density of the scores within the given range.">')
+  theme_bw()
 ```
 
 One thing that we can examine is the probability that a student in the target population will receive a particular VST score. For example, what is the probability that a student randomly selected from our sample population would earn a 34 on the VST? By looking at a density plot, we can see that there is a very small chance that we would randomly select a smaller score than 34 and a much larger chance that we would randomly select a score higher than 34. 
@@ -369,23 +255,10 @@ distr <- data.frame(x=seq(30, 50, length=300)) %>%
   mutate(density = dnorm(x, mean=40, sd=5),
           group = ifelse(x<=34, 'Worse score than 34','Better score than 34'))
 
-g10<- ggplot(distr, aes(x = x, y = density, fill = group)) +
+ggplot(distr, aes(x=x, y=density, fill=group)) +
   geom_line() +
-  geom_area(alpha = 0.5) +  # Adjusting transparency for better visualization
-  scale_fill_viridis(discrete = TRUE) +  # Applying a color-blind friendly palette
-  theme_bw() +
-  labs(
-    x = "Score",
-    y = "Density",
-    title = "Probability Distribution of Scores")
-
-#print(g10)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot10.png", plot = g10, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot10.png" alt="Plot displaying a probability density function of scores with a bell-shaped curve. The plot is filled with two colors: yellow for scores worse than 34 and purple for scores better than 34.">')
+  geom_area() +
+  theme_bw()
 ```
 
 To check these probabilities precisely, we can use the pnorm() function.
@@ -455,33 +328,19 @@ Below, we have two samples (lets call them two classes with VST scores). The red
 
 ```{r}
 #don't worry too much about this code - see the plot
-distr1 <- data.frame(x = seq(30, 50, length = 300)) %>%
-  mutate(density = dnorm(x, mean = 40, sd = 5))
+distr <- data.frame(x=seq(30, 50, length=300)) %>%
+  mutate( density = dnorm(x, mean=40, sd=5))
 
-distr2 <- data.frame(x = seq(35, 55, length = 300)) %>%
-  mutate(density = dnorm(x, mean = 45, sd = 5))
+distr2 <- data.frame(x=seq(35, 55, length=300)) %>%
+  mutate( density = dnorm(x, mean=45, sd=5))
 
-# Combine the data frames and add a grouping variable (added for plotting)
-combined_distr <- rbind(distr %>% mutate(group = "distr1"),
-                        distr2 %>% mutate(group = "distr2"))
+ggplot(distr, aes(x=x, y=density)) +
+  geom_line(color = "red") +
+  #geom_area() +
+  geom_line(distr2, mapping = aes(x=x, y=density), color = "blue") +
 
-# Plot
-g11<- ggplot(combined_distr, aes(x = x, y = density, color = group)) +
-  geom_line() +
-  scale_color_viridis(discrete = TRUE) +
-  theme_bw() +
-  labs(
-    x = "VST",
-    y = "Density",
-    title = "Comparative Normal Distributions of Two Samples")
-
-#print(g11)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot11.png", plot = g11, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot11.png" alt=Plot showing two overlapping normal distribution curves. The first purple curve peaks at a mean of 40, and the second yellow curve peaks at a mean of 45 with the same standard deviation. The curves intersect around a score of 42, highlighting the range where the distributions of both classes overlap.">')
+  theme_bw()
+  
 ```
 
 To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 5). So, Cohen's D = (|-5/5| = 1.00), which is a large effect (according to Cohen, 1988). 

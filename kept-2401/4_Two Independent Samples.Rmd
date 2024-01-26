@@ -36,19 +36,8 @@ knitr::opts_chunk$set(echo = TRUE)
 In research, we often want to know whether groups differ with regard to a particular characteristic. For example, in [Tutorial 2](https://kristopherkyle.github.io/IntroQuantALRM/2_getting_started_vis_data.html) we looked at how particular classes of vehicles differed with regard to  highway fuel efficiency. In the dataset that is visualized below, we can see (for example) that there doesn't seem to be much of a difference in highway fuel efficiency between compact and midsize vehicles. There does, however, seem to be a reasonably large difference in highway fuel efficiency between midsize vehicles and pickups.
 ```{r}
 library(ggplot2) #import ggplot2
-library(viridis) #color-friendly palettes
-
-g1 <- ggplot(data = mpg) + # create plot using the mpg data frame
-  geom_boxplot(mapping = aes(x = class, y = hwy, fill=class)) + #create boxplots for each vehicle class based on highway fuel efficiency
-  scale_fill_viridis(discrete = TRUE)
-
-#print(g1)
-```
-
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # this is for the plot's alt text is correctly displayed in the HTML
-
-cat('<img src="plot1.png" alt="Boxplot displaying highway fuel efficiency across different vehicle classes. Each box represents the interquartile range of efficiency, with lines extending to the highest and lowest observed values and outliers shown as individual black dots.">')
+ggplot(data = mpg) + # create plot using the mpg data frame
+  geom_boxplot(mapping = aes(x = class, y = hwy)) #create boxplots for each vehicle class based on highway fuel efficiency
 ```
 
 While visualizing data can help us identify general trends, the use of inferential statistics (such as T-tests) helps us to formally (and more precisely) discuss relationships in the data (such as differences between groups). When conducting inferential statistics, we use two primary metrics for measuring relationships in a data set, namely **p-values** and **effect sizes**. These concepts were introduced in [Tutorial 3](https://kristopherkyle.github.io/IntroQuantALRM/3_Loading_data_assumptions_sig_effect.html), but will be revisited (and in some cases expanded on) below. For now, our discussions will be limited to measuring differences in a particular characteristic across two groups (e.g., differences in highway fuel efficiency across midsize vehicles and pickups)
@@ -104,7 +93,6 @@ In addition to visualizing data, getting descriptive statistics can be helpful i
 #install.packages("dplyr")
 library(psych) #many useful functions
 library(dplyr) #helps us sort and filter datasets
-
 describe(mydata) #get descriptive statistics
 ```
 
@@ -130,34 +118,14 @@ First, we will visually inspect the data for normality using density plots. We c
 
 ```{r}
 library(ggplot2)
-
-g2 <- ggplot(mydata, aes(x=Nwords, color = Prompt)) + 
+ggplot(mydata, aes(x=Nwords, color = Prompt)) + 
   geom_density() +
-  facet_wrap(~Prompt) +
-  scale_color_viridis(discrete = TRUE)
-
-#print(g2)
-```
-
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot2.png", plot = g2, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot2.png" alt="Density plots showing the distribution of word counts across different prompts: Prompt A in purple and Prompt B in yellow.">')
+  facet_wrap(~Prompt)
 ```
 
 ```{r}
-g3 <- ggplot(mydata, aes(x=Nwords, color=Prompt, fill=Prompt)) +
-  geom_density(alpha=0.4) +
-  scale_color_viridis(discrete=TRUE) + 
-  scale_fill_viridis(discrete=TRUE) 
-
-#print(g3)
-```
-
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot3.png"  alt="Overlaid density plots displaying word count distributions for two prompts. Prompt A in purple and Prompt B in yellow, both showing tails to the left and right of the peaks.">')
+ggplot(mydata, aes(x=Nwords, color = Prompt, fill=Prompt)) +
+  geom_density(alpha = 0.4)
 ```
 
 Either way, we observe that the two datasets roughly (but certainly not perfectly) represent a normal distribution.
@@ -179,20 +147,10 @@ Much like the assumption of normalilty, we can check the assumption of equal var
 We can get an idea of the variance in distribution plots, but one of the the clearest ways to examine the variance is using a boxplot. Below, we see that the variance appears to be similar across the two prompts. (Note, the boxes represent the middle 50% of the data, the line within each box represents the median value. The boxes are roughly the same size, which indicates that the variance is roughly equal).
 
 ```{r}
-custom_colors <- c("orange", "#377eb8") #for color-friendly option
-
-g4 <- ggplot(data = mydata, aes(x = Prompt, y = Nwords, fill = Prompt)) +
-  geom_boxplot() +
-  scale_fill_manual(values = custom_colors)
-
-#print(g4)
+ggplot(data = mydata) + 
+  geom_boxplot(aes(x = Prompt, y = Nwords, color = Prompt))
 ```
 
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot4.png", plot = g4, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot4.png"  alt="Boxplots showing word counts for two prompts. Prompt A in orange and Prompt B in blue. Each boxplot central line indicates the median word count, with the box itself showing the interquartile range. Whiskers mark the range within 1.5 times the interquartile range, excluding outliers, which are plotted as black dots beyond the whiskers.">')
-```
 
 In addition to visualizing our data, we can run Levene's test, which is available via the car() package (don't forget to install it if you haven't installed it yet). The results below indicate that the variance in Nwords score across the two Prompts in our dataset is not significantly different (_p_ = 0.769). In other words, we very clearly meet the assumption of equal variance.
 
@@ -222,39 +180,18 @@ The prototypical plot used to examine two independent groups is the boxplot. We 
 Based on the boxplots, we see that the median number of words in Prompt A score is slightly higher than the median number of words in Prompt B, though it is unclear whether this difference will be statistically significant or not. Regardless, given the overlap in the boxplots, it is unlikely that the effect will be large. But, we have inferential tests (like the t-test!) to objectively determine this.
 
 ```{r}
-#custom_colors <- c("orange", "#377eb8") #for color-friendly option
-
-g5 <- ggplot(data = mydata, aes(x = Prompt, y = Nwords, fill = Prompt)) +
-  geom_boxplot() +
-  scale_fill_manual(values = custom_colors)
-
-#print(g5)
-```
-
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot5.png", plot = g5, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot5.png"  alt="Boxplots showing word counts for two prompts. Prompt A in orange and Prompt B in blue. Each boxplot central line indicates the median word count, with the box itself showing the interquartile range. Whiskers mark the range within 1.5 times the interquartile range, excluding outliers, which are plotted as black dots beyond the whiskers.">')
+ggplot(data = mydata) + 
+  geom_boxplot(mapping = aes(x = Prompt, y = Nwords,color = Prompt))
 ```
 
 A second (arguably way cooler) way to visualize the data is with violin plots. A violin plot is similar to a boxplot except that the distribution of the data is represented more precisely. If you look at one side of the violin plot (and rotate it 90 degrees) it will resemble the density plots that we made above. In the plot below, we have created boxplots inside the violin plots.
 
 ```{r}
-#custom_colors <- c("orange", "#377eb8") #for color-friendly option
-
-g6 <- ggplot(data = mydata, aes(x = Prompt, y = Nwords)) + 
-  geom_violin(aes(color = Prompt)) +
-  geom_boxplot(aes(fill = Prompt), width = .2) +
-  scale_color_manual(values = custom_colors) +
-  scale_fill_manual(values = c("white", "white")) 
-
-#print(g6)
+ggplot(data = mydata) + 
+  geom_violin(mapping = aes(x = Prompt, y = Nwords,color = Prompt)) +
+  geom_boxplot(mapping = aes(x = Prompt, y = Nwords), width = .2)
 ```
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot6.png", plot = g6, width = 8, height = 6) # for the alt text
 
-cat('<img src="plot6.png"  alt="Violin plots overlaid with boxplots representing word counts for two prompts. The violin plot for Prompt A, outlined in orange, and for Prompt B in blue, indicating the density distribution of word counts. The central white boxplot for each prompt shows the median and interquartile range. Outliers are represented by black dots beyond the whiskers of the boxplots.">')
-```
 #### Conducting (and interpreting) an independent samples t-test
 
 Next, we will run an independent samples t-test. Remember that if you want to learn the ins and outs of what a function in R can do, you can always use "?function_name" or "help(function_name").
@@ -292,17 +229,8 @@ Number of words per essay in each prompt
 | Full Dataset | 480 | 317.65 | 78.28 |
 
 ```{r, echo=FALSE}
-g7 <- ggplot(data = mydata, aes(x = Prompt, y = Nwords, fill = Prompt)) +
-  geom_boxplot() +
-  scale_fill_manual(values = custom_colors)
-
-#print(g7)
-```
-
-```{r, echo=FALSE, results='asis'} 
-ggsave("plot7.png", plot = g7, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot7.png"  alt="Boxplots showing word counts for two prompts. Prompt A in orange and Prompt B in blue. Each boxplot central line indicates the median word count, with the box itself showing the interquartile range. Whiskers mark the range within 1.5 times the interquartile range, excluding outliers, which are plotted as black dots beyond the whiskers.">')
+ggplot(data = mydata) + 
+  geom_boxplot(mapping = aes(x = Prompt, y = Nwords,color = Prompt))
 ```
 
 Figure 1. Box plot indicating the number of words per essay in each prompt

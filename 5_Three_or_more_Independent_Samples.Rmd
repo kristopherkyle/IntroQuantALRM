@@ -1,7 +1,7 @@
 ---
 title: "One Way ANOVA"
 author: "Kristopher Kyle"
-date: "last updated 2023-01-26"
+date: "last updated 2024-01-28"
 output: html_document
 ---
 
@@ -62,13 +62,13 @@ intermediate.ds <- mydata %>% filter(Proficiency == "Int")
 high.ds <- mydata %>% filter(Proficiency == "High")
 
 #Test normality for Meaningfulness_AW in Beginner essays
-shapiro.test(beginner.ds$L1_Word_Reaction_Time) #p = 0.2336
+shapiro.test(beginner.ds$Meaningfulness_AW) #p = 0.2336
 
 #Test normality for Meaningfulness_AW in Int essays
-shapiro.test(intermediate.ds$L1_Word_Reaction_Time) #p = 0.0112
+shapiro.test(intermediate.ds$Meaningfulness_AW) #p = 0.0112
 
 #Test normality for Meaningfulness_AW in High essays
-shapiro.test(high.ds$L1_Word_Reaction_Time) #p = 0.1591
+shapiro.test(high.ds$Meaningfulness_AW) #p = 0.1591
 
 ```
 
@@ -117,7 +117,7 @@ We can also use Levene's test to statistically assess whether the variance is ro
 
 ```{r}
 library(car)
-leveneTest(L1_Word_Reaction_Time ~ Proficiency, mydata) #the syntax here is variable ~ grouping variable, dataframe
+leveneTest(Meaningfulness_AW ~ Proficiency, mydata) #the syntax here is variable ~ grouping variable, dataframe
 ```
 
 The results of Levene's test indicate that the variance is roughly equal across our three proficiency groups, which means that our data meets this assumption.
@@ -138,7 +138,7 @@ To determine whether any differences exist, we create a model called "anova_mode
 ```{r}
 #install.packages("lsr") #install the lsr package if you haven't already
 library(lsr)
-anova_model <- aov(L1_Word_Reaction_Time~Proficiency, data = mydata)
+anova_model <- aov(Meaningfulness_AW~Proficiency, data = mydata)
 summary(anova_model)
 ```
 
@@ -169,7 +169,7 @@ To get an effect size for each contrast, we will have to do a little more work. 
 #create new df with only Beginner and Int
 mydata_beg_int <- mydata %>%
   filter(Proficiency == "Beginner" | Proficiency == "Int") %>%
-  select(Proficiency, L1_Word_Reaction_Time)
+  select(Proficiency, Meaningfulness_AW)
 #summary(mydata_effs_BI)
 
 library(psych)
@@ -182,16 +182,16 @@ To get the effect sizes for the rest of the contrasts, we repeat this process wi
 #create new df with only Beginner and High
 mydata_beg_high <- mydata %>%
   filter(Proficiency == "Beginner" | Proficiency == "High") %>%
-  select(Proficiency, L1_Word_Reaction_Time)
+  select(Proficiency, Meaningfulness_AW)
 #summary(mydata_effs_BH)
 
 #create new df with only Int and High
 mydata_int_high <- mydata %>%
   filter(Proficiency == "Int" | Proficiency == "High") %>%
-  select(Proficiency, L1_Word_Reaction_Time)
+  select(Proficiency, Meaningfulness_AW)
 #summary(mydata_effs_IH)
 
-cohen.d(mydata_beg_high,"Proficiency")# (-)1.2 [large effect]
+cohen.d(mydata_beg_high,"Proficiency")# (-) 1.25 [large effect]
 cohen.d(mydata_int_high,"Proficiency")# .56 [medium effect]
 ```
 
@@ -201,14 +201,14 @@ cohen.d(mydata_int_high,"Proficiency")# .56 [medium effect]
 If our groups are normally distributed but violate homogeneity of variance, we can compute the Welch one-way test with Games-Howell post hoc tests. Note that we would still use eta squared as our effect size, which would would generate using the code above.
 
 ```{r}
-welch_model <- oneway.test(L1_Word_Reaction_Time~Proficiency, data = mydata,var.equal = FALSE)
+welch_model <- oneway.test(Meaningfulness_AW~Proficiency, data = mydata,var.equal = FALSE)
 print(welch_model)
 ```
 
 ```{r}
 #install.packages("userfriendlyscience") #install this if you haven't yet
 library(userfriendlyscience)
-posthocTGH(mydata$Proficiency, y = mydata$L1_Word_Reaction_Time)
+posthocTGH(mydata$Proficiency, y = mydata$Meaningfulness_AW)
 ```
 
 
@@ -216,7 +216,7 @@ posthocTGH(mydata$Proficiency, y = mydata$L1_Word_Reaction_Time)
 If our data is NOT normally distributed, there are non-parametric alternatives. One of these is the Kruskal-Wallis rank sum test:
 
 ```{r}
-kruskal.test(L1_Word_Reaction_Time~Proficiency, data = mydata)
+kruskal.test(Meaningfulness_AW~Proficiency, data = mydata)
 ```
 
 One option for pairwise comparisons with the Kruskal- Wallis test is the Dunn test:
@@ -224,5 +224,5 @@ One option for pairwise comparisons with the Kruskal- Wallis test is the Dunn te
 ```{r}
 #install.packages("FSA") #install this if you haven't yet
 library(FSA)
-dunnTest(L1_Word_Reaction_Time~Proficiency, data = mydata, method = "bh")
+dunnTest(Meaningfulness_AW~Proficiency, data = mydata, method = "bh")
 ```

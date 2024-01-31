@@ -45,93 +45,46 @@ summary(mr_data)
 
 ```{r}
 library(ggplot2)
-library(viridis) #color-friendly palettes
-
-g1 <- ggplot(mr_data, aes(x = frequency_AW , y=Score)) +
+ggplot(mr_data, aes(x = frequency_AW , y=Score )) +
   geom_jitter() + 
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") + #this is a line of best fit based on the entire dataset
-  theme_minimal()
-
-#print(g1)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot1.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The red line meant to approximate the blue line. The gray shaded area around each line indicates the confidence interval for that regression.">')
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
 **Frequency_CW**
 
 ```{r}
-g2 <- ggplot(mr_data, aes(x = frequency_CW , y=Score)) +
+ggplot(mr_data, aes(x = frequency_CW , y=Score )) +
   geom_jitter() + 
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") +#this is a line of best fit based on the entire dataset
-  theme_minimal()
-
-#print(g2)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot2.png", plot = g2, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot2.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The red line meant to approximate the blue line. The gray shaded area around each line indicates the confidence interval for that regression.">')
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
 **Frequency_FW**
 
 ```{r}
-g3 <- ggplot(mr_data, aes(x = frequency_FW , y=Score )) +
+ggplot(mr_data, aes(x = frequency_FW , y=Score )) +
   geom_jitter() + 
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") + #this is a line of best fit based on the entire dataset
-  theme_minimal()
-
-#print(g3)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot3.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The gray shaded area around each line indicates the confidence interval for that regression.">')
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
 **bigram_frequency**
 
 ```{r}
-g4 <- ggplot(mr_data, aes(x = bigram_frequency , y=Score)) +
+ggplot(mr_data, aes(x = bigram_frequency , y=Score )) +
   geom_jitter() + 
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") + #this is a line of best fit based on the entire dataset
-  theme_minimal()
-
-#print(g4)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot4.png", plot = g4, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot4.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The gray shaded area around each line indicates the confidence interval for that regression.">')
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
 **MLC**
 
 ```{r}
-g5 <- ggplot(mr_data, aes(x = MLC , y=Score )) +
+ggplot(mr_data, aes(x = MLC , y=Score )) +
   geom_jitter() + 
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") + #this is a line of best fit based on the entire dataset
-  theme_minimal()
-
-#print(g5)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot5.png", plot = g5, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot5.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The gray shaded area around each line indicates the confidence interval for that regression.">')
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
 For the purposes of this tutorial, we will suggest that our data roughly meet Assumptions 1-3, though we might argue for a few violations (e.g., there seem to be outliers in the MLC scatterplot).
@@ -194,40 +147,19 @@ Now, we can easily plot the relationship between Score and the values predicted 
 
 ```{r}
 library(ggplot2)
-
-g6 <- ggplot(mr_data, aes(y=pred_Score, x = Score)) +
+ggplot(mr_data, aes(y=pred_Score, x = Score)) +
   geom_jitter() +
-  geom_smooth(method="lm") +
-  theme_minimal()
-
-#print(g6)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot6.png", plot = g6, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot6.png" alt=""Scatter plot showing black points and a smooth line running through the data points. The line shows a line of best fit. The gray shaded area around the line indicates the confidence interval for that regression.">')
+  geom_smooth(method="lm")
 ```
 
 #### Checking the assumption of normality (of the residuals)
 
 A perfectly normal distribution of residuals would be when all data points fall perfectly on the line. As we can see, we have some outliers (particularly on the right side of the graph), but the distribution is roughly normal.
 
-```{r eval=FALSE, echo=TRUE}
+```{r}
+#install.packages("car") #if not already installed
 library(car)
-qqPlot(model1)
-```
-
-```{r include=FALSE}
-#(no need to execute; saving plot into .png for adding the alt text)
-library(car)
-png("plot7.png", width = 600, height = 400) 
-qqPlot(model1)
-dev.off()
-```
-
-```{r, echo=FALSE, results='asis'}
-cat('<img src="plot7.png" alt="A quantitative normal Q-Q plot displaying standardized residuals plotted against theoretical standard normal quantiles. The data points are represented by black circles mostly align with the blue diagonal line. The blue shaded area around the line shows a confidence band. Some points, especially in the upper right tail, deviate from this line, suggesting potential outliers.">')
+qqPlot(model2)
 ```
 
 ### Stepwise models

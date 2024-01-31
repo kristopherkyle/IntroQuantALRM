@@ -41,8 +41,6 @@ First, we will load our data:
 
 ``` {r}
 library(ggplot2) #load ggplot2
-library(viridis) #color-friendly palettes
-
 cor_data <- read.csv("data/correlation_sample.csv", header = TRUE) #read the spreadsheet "correlation_sample.csv" into r as a dataframe
 summary(cor_data) #get descriptive statistics for the dataset
 ```
@@ -56,20 +54,11 @@ Our variables of interest (frequency_CW) and number of words (nwords) are both c
 Next, we will test the assumption of linearity using a Loess line (in red) and a line of best fit (in blue). These indicate that our data are roughly linear (because the red line mirrors the blue one). Note that this is the same data from the correlation tutorial.
 
 ```{r}
-g1 <- ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
+ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
   geom_point() +
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") + #this is a line of best fit based on the entire dataset
-  scale_color_viridis(discrete = TRUE) +  
-  theme_minimal() 
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 
-#print(g1)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot1.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The gray shaded area around each line indicates the confidence interval for that regression.">')
 ```
 
 Looking again at the scatterplot, we see that there are a few outliers. However, given the size of our dataset, these shouldn't be a problem.
@@ -129,23 +118,10 @@ This is the effect size adjusted for the number of predictor variables used. As 
 ### Checking the assumption of normality (of residuals)
 Now that we have run the model, we can check the assumption of normality (of the residuals) using a qq plot. A perfectly normal distribution of residuals would be when all data points fall perfectly on the line. As we can see, we have some outliers (particularly on the right side of the graph), but the distribution is roughly normal.
 
-```{r eval=FALSE, echo=TRUE}
+```{r}
 library(car)
 qqPlot(model1)
 ```
-
-```{r include=FALSE}
-#(no need to execute; saving plot into .png for adding the alt text)
-library(car)
-png("plot2.png", width = 600, height = 400)
-qqPlot(model1)
-dev.off()
-```
-
-```{r, echo=FALSE, results='asis'}
-cat('<img src="plot2.png" alt="A quantitative normal Q-Q plot displaying standardized residuals plotted against theoretical standard normal quantiles. The data points are represented by black circles mostly align with the blue diagonal line. The blue shaded area around the line shows a confidence band. Some points, especially in the upper right tail, deviate from this line, suggesting potential outliers.">')
-```
-
 ### Example write-up
 This study examined the relationship between lexical sophistication (measured as the mean frequency of content words) and writing proficiency (**imperfectly!** measured as number of words per essay) in a corpus of argumentative essays written by L2 users of English. Descriptive statistics are reported in Table 1.
 
@@ -177,19 +153,10 @@ Results of the linear regression analysis
 | Frequency CW | 0.041 | 0.039     | -151.42 | 33.37 | < .001 |
 
 ```{r, echo = FALSE}
-g3 <- ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
+ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
   geom_point() +
   #geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") +
-  theme_minimal() #this is a line of best fit based on the entire dataset
-
-#print(g3)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot3.png" alt="Scatter plot showing black points and a smooth line running through the data points. The line shows a line of best fit. The gray shaded area around the line indicates the confidence interval for that regression.">')
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
 Figure 1. Predicted versus actual scores

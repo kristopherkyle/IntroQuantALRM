@@ -44,58 +44,25 @@ First, we can look at the means at each time point. Overall, there appears to be
 
 ```{r}
 library(ggplot2)
-library(viridis) #color-friendly palettes
-
-g1 <- ggplot(data = mydata, aes(x = FTime, y = MLT, group = Time)) +
+ggplot(data = mydata, aes(x = FTime, y = MLT, group = Time)) +
   geom_boxplot()
-
-#print(g1)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot1.png" alt="Boxplot showing score distribution across six time points. Each box represents the interquartile range, which contains the horizontal line within each box marks the median score. The whiskers extend to the furthest points that are not considered outliers. Potential outliers are represented as individual black dots outside the whiskers.">')
 ```
 
 Then, we can get a clearer view by looking at individual trajectories. In the plot below, each line represents a different participant.
 
 ```{r}
 library(ggplot2)
-
-# customizing colors
-colors <- c("orange", "#56B4E9", "#009E73", "gold2", "#0072B2", "purple", "#CC79A7", "#999999", "#000000") 
-
-g2 <- ggplot(data = mydata, aes(x = FTime, y = MLT, group = Participant)) +
+ggplot(data = mydata, aes(x = FTime, y = MLT, group = Participant)) +
   geom_line(aes(color=Participant)) +
-  geom_point(aes(color=Participant)) +
-  scale_color_manual(values = colors) 
-  
-#print(g2)
+  geom_point(aes(color=Participant))
 ```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot2.png", plot = g2, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot2.png" alt="Multi-colored lines showing individual trajectories for various participants over time. Points where the lines change direction are marked with colored dots corresponding to each line\'s color.">')
-```
-
 Sometimes, we get a clearer view of individual trajectories when we use facet wrap. As we can see, participants seem to be generally following an upward trend, but there are also non-linear trends (see EFL_6 and EFL 7 at week 3!).
 
 ```{r}
-g3 <- ggplot(data = mydata, aes(x = FTime, y = MLT, group = Participant)) +
+ggplot(data = mydata, aes(x = FTime, y = MLT, group = Participant)) +
   geom_line(aes(color=Participant)) +
   geom_point(aes(color=Participant)) +
-  scale_color_manual(values = colors) +
   facet_wrap(~Participant)
-
-#print(g3)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot3.png" alt="A faceted line chart displaying individual score trajectories for nine participants across six time points. The chart is divided into nine panels, one for each participant, showing the progression of scores from time point 1 to 6.">')
 ```
 
 ## Conducting an LME
@@ -119,7 +86,6 @@ The most "appropriate" choice (treating Time as a factor or a continuos variable
 
 ```{r}
 library(lmerTest)
-
 int_model1 <- lmer(MLT~FTime + (1 | Participant), data=mydata)
 summary(int_model1)
 ```
@@ -141,40 +107,18 @@ Now that we have a model, we can check the assumption of linearity and normality
 
 First we will test for linearity (wherein the relationship between our actual MLT values and our predicted MLT values should roughly comprise a straight line as opposed to a curved one!). As we see below, the model appears to satisfy the assumption of linearity.
 
-```{r eval=FALSE, echo=TRUE}
-plot(resid(int_model1), mydata$MLT)
-```
 
-```{r include=FALSE}
-#(no need to execute; saving plot into .png for adding the alt text)
-png("plot4.png", width = 600, height = 400) 
-plot(resid(int_model1), mydata$MLT)
-dev.off()
-```
-
-```{r, echo=FALSE, results='asis'}
-cat('<img src="plot4.png" alt="A scatter plot of residuals from a model against the original MLT values. The points are spread out across the plot.">')
+```{r}
+linearity<-plot(resid(int_model1),#extract the residuals
+                mydata$MLT) #specify original y variable
 ```
 
 Now, we will check the assumption of normality (of residuals) using a qq plot. A perfectly normal distribution of residuals would be when all data points fall perfectly on the line. As we can see, we have some outliers, but the distribution is (arguably) roughly normal.
 
-```{r eval=FALSE, echo=TRUE}
+```{r}
 #install.packages("lattice") #if not already installed
 library(lattice)
-
 qqmath(int_model1)
-```
-
-```{r, include=FALSE}
-#no need to execute
-library(lattice)
-png("plot5.png", width = 600, height = 400)
-qqmath(int_model1)
-dev.off()
-```
-
-```{r, echo=FALSE, results='asis'}
-cat('<img src="plot5.png" alt="A quantitative normal Q-Q plot displaying standardized residuals plotted against theoretical standard normal quantiles. The data points are represented by blue circles and close to a diagonal line.">')
 ```
 
 #### Model effect size
@@ -233,21 +177,12 @@ library(dplyr)
 #add predicted values to dataframe
 mydata <- mydata %>% mutate(int_model2_pred = predict(int_model2,re.form = ~ (1 | Participant)))
 
-g6 <- ggplot(mydata, aes(y=MLT, x=Time)) +
+ggplot(mydata, aes(y=MLT, x=Time)) +
   facet_wrap(~ Participant) + 
   geom_point(aes(color=Participant), show.legend = FALSE) + 
   geom_line(aes(color=Participant), show.legend = FALSE) +
   geom_line(aes(y=int_model2_pred), linetype=2) +
-  scale_color_manual(values = colors) +
-  facet_wrap(~Participant)
-
-#print(g6)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot6.png", plot = g6, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot6.png" alt="A multi-panel line graph showing the relationship between MLT and Time for nine participants, each in a separate panel. Each panel shows two lines: one representing the observed MLT values, marked with points, and another of predicted MLT values from a model, shown as a dashed line. The colors of the lines vary for each participant.">')
+  scale_y_continuous()
 ```
 
 These results indicate that there is a significant, positive, medium relationship between Time and MLT. The results also indicate that there is a fairly high degree of variability across participants.
@@ -280,21 +215,12 @@ library(dplyr)
 #add predicted values to dataframe
 mydata <- mydata %>% mutate(int_model2_pred = predict(int_model2,re.form = ~ (1 | Participant)))
 
-g6 <- ggplot(mydata, aes(y=MLT, x=Time)) +
+ggplot(mydata, aes(y=MLT, x=Time)) +
   facet_wrap(~ Participant) + 
   geom_point(aes(color=Participant), show.legend = FALSE) + 
   geom_line(aes(color=Participant), show.legend = FALSE) +
   geom_line(aes(y=int_model2_pred), linetype=2) +
-  scale_color_manual(values = colors) +
   scale_y_continuous()
-
-#print(g6)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot6.png", plot = g6, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot6.png" alt="A multi-panel line graph showing the relationship between MLT and Time for nine participants, each in a separate panel. Each panel shows two lines: one representing the observed MLT values, marked with points, and another of predicted MLT values from a model, shown as a dashed line. The colors of the lines vary for each participant.">')
 ```
 
 Figure 1. Predicted and actual MLT scores over time spent studying English
@@ -328,22 +254,12 @@ When we plot our actual and predicted values, we now see that each participant h
 ```{r}
 library(dplyr)
 mydata <- mydata %>% mutate(int_slope_model_pred = predict(int_slope_model,re.form = ~ (1 | Participant)))
-
-g7 <- ggplot(mydata, aes(y=MLT, x=Time)) +
+ggplot(mydata, aes(y=MLT, x=Time)) +
   facet_wrap(~ Participant) + 
   geom_point(aes(color=Participant), show.legend = FALSE) + 
   geom_line(aes(color=Participant), show.legend = FALSE) +
   geom_line(aes(y=int_slope_model_pred), linetype=2) +
-  scale_color_manual(values = colors) +
   scale_y_continuous()
-
-#print(g7)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot7.png", plot = g7, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot7.png" alt="A multi-panel line graph showing the relationship between MLT and Time for nine participants, each in a separate panel. Each panel shows two lines: one representing the observed MLT values, marked with points, and another of predicted MLT values from a model, shown as a dashed line. The colors of the lines vary for each participant. The slope of the dashed line is slightly different from the plot 6.">')
 ```
 
 To determine whether the more complicated model (random intercepts + slopes) is significantly better at modeling our data than the simpler one (random intercepts), we simply use the "anova()" function, which indicates that there are indeed no significant differences between our models (p = 0.648), so we might as well use the simpler one.

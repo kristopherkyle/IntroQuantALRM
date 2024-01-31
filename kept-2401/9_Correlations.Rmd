@@ -43,8 +43,6 @@ These variables (and a few others) are included in the "correlation_sample.csv" 
 
 ``` {r}
 library(ggplot2) #load ggplot2
-library(viridis) #color-friendly palettes
-
 cor_data <- read.csv("data/correlation_sample.csv", header = TRUE) #read the spreadsheet "correlation_sample.csv" into r as a dataframe
 summary(cor_data) #get descriptive statistics for the dataset
 ```
@@ -58,27 +56,21 @@ To check the linearity of our data, we will create a scatterplot. For our data t
 The blue line below represents the (straight) line of best fit for the data, while the red line represents a line of best fit based on a moving average (called a "Loess" line). In order to meet the assumption of linearity, we want the red line to approximate the blue line. In this case, we can make a pretty strong argument that we meet the assumption of linearity.
 
 ```{r}
-g1 <- ggplot(cor_data, aes(x = frequency_CW, y= nwords )) +
+ggplot(cor_data, aes(x = frequency_CW, y= nwords )) +
   geom_point() +
   geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") + #this is a line of best fit based on the entire dataset
-  scale_color_viridis(discrete = TRUE) +  
-  theme_minimal() 
-
-#print(g1)
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
-```{r, echo=FALSE, results='asis'}
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot1.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The red line meant to approximate the blue line. The gray shaded area around each line indicates the confidence interval for that regression.">')
-```
 
 #### Assumption 3: Minimal outliers
 Outliers can strongly affect our correlation coefficents (particularly in small datasets). Because our dataset is fairly large (480 participants), having a few outliers will not be a large problem. To check for outliers, lets take a look at the scatterplot again.
 
-```{r, echo=FALSE, results='asis'}
-cat('<img src="plot1.png" alt="Scatter plot showing black points and two smooth lines running through the data points: one in blue, which shows a line of best fit, and the other in red, which shows a loess regression. The red line meant to approximate the blue line. The gray shaded area around each line indicates the confidence interval for that regression. The distribution of points appears random without obvious clusters.">')
+```{r}
+ggplot(cor_data, aes(x = frequency_CW, y= nwords )) +
+  geom_point() +
+  geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
 
 It appears as though we only have a few outliers (and one particularly extreme one in the bottom right section of the plot.) Based on the size of the data, there don't seem to be any large issues to be worried about. If we look at the red line, we can actually see the effect of the outliers (e.g., the slight rise in the line at frequency of 2.9 words and the  rise in the line at a frequency of 2.25. However, because these perturbations in the line are rather small, we can conclude that they are not causing large issues.
@@ -87,18 +79,8 @@ It appears as though we only have a few outliers (and one particularly extreme o
 Next, we will check the assumption of bivariate normality for our variables using two-dimensional density plots. We can look a the plot in a similar way that we would look at a contour map. In this case, the lighter colored regions have higher density (think altitude) than the darker shaded regions. A perfect bivariate distribution would look like a 3-dimensional normal distribution curve. What we have below roughly follows this shape: The most dense regions are in the middle of the plot. The contours of our "mountain" are not perfectly symmetrical (we see some ridges and valleys leading from the summit), but they are reasonably symmetrical. Thus, our visual inspection indicates that we have a roughly normal bivariate distribution.
 
 ```{r}
-g2 <- ggplot(cor_data, aes(x = frequency_CW, y=nwords )) +
-  stat_density_2d(aes(fill = ..level..), geom = "polygon")+
-  scale_fill_viridis() +
-  theme_minimal()  
-
-#print(g2)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot2.png", plot = g2, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot2.png" alt="Two-dimensional density plot with shades representing the distribution of frequency_CW and nwords. The brightest area indicates the highest data concentration.">')
+ggplot(cor_data, aes(x = frequency_CW, y=nwords )) +
+  stat_density_2d(aes(fill = ..level..), geom = "polygon")
 ```
 
 We can also check this using a statistical test. As we see below, our distribution does not significantly deviate from a normal distribution with regard to skewness (symmetry of the distribution; p = 0.210), but it does significantly deviate from a normal distribution with regard to kurtosis (height/width of the distribution; p = 0.00000000199). So, our data is not perfectly normal. We can either proceed with a Pearson correlation (on the basis of our visual inspection/skewness) of we can use a nonparametric test. Note that the _r_ value will still be valid if we run a Pearson test, but we may have to question the _p_ value.
@@ -162,23 +144,12 @@ Results of the Pearson correlation analysis with number of words
 | :------ | :--- | :---- | :--- | 
 | Frequency CW | 480 | -0.203 | < .001 |
 
-```{r}
-g3 <- ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
+```{r, echo = FALSE}
+ggplot(cor_data, aes(x = frequency_CW , y=nwords )) +
   geom_point() +
   #geom_smooth(method = "loess",color = "red") + #this is a line of best fit based on a moving average
-  geom_smooth(method = "lm") + #this is a line of best fit based on the entire dataset
-  scale_color_viridis(discrete = TRUE) +  
-  theme_minimal() 
-
-#print(g3)
+  geom_smooth(method = "lm") #this is a line of best fit based on the enture dataset
 ```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot3.png" alt="Scatter plot showing black points and a smooth line in blue running through the data points. The line shows a line of best fit, and the other in red, which shows a loess regression. The gray shaded area around each line indicates the confidence interval for that regression.">')
-```
-
 
 Figure 1. Relationship between Number of Words and Content Word Frequency
 

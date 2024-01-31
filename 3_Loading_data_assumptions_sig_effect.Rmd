@@ -271,6 +271,8 @@ One way that we can check the degree to which our data is normally distributed i
 
 ```{r}
 #This code may be useful in the future, but don't worry about it too much right now.
+custom_colors <- c("Density" = "#377eb8", "Normal Curve" = "orange") 
+
 g7<- ggplot(fundata, aes(x = VST)) + 
   geom_density(aes(color = "Density")) +  #Assigning a name to the color aesthetic
   # geom_histogram(aes(y = ..density.., fill = "Histogram"), binwidth = 3) +
@@ -278,9 +280,10 @@ g7<- ggplot(fundata, aes(x = VST)) +
   ylab("") +
   xlab("VST") +
   scale_y_continuous(breaks = NULL) +
-  scale_color_viridis(discrete = TRUE) +
+  scale_color_manual(values = custom_colors) +  #scale_color_viridis(discrete = TRUE) is possible, but for better visibility
   labs(
-    title = "Density and Normal Distribution of VST Scores")
+    title = "Density and Normal Distribution of VST Scores"
+  )
 
 #print(g7)
 ```
@@ -288,7 +291,7 @@ g7<- ggplot(fundata, aes(x = VST)) +
 ```{r, echo=FALSE, results='asis'}
 ggsave("plot7.png", plot = g7, width = 8, height = 6) # for the alt text
 
-cat('<img src="plot7.png" alt="Plot showing two curves over a range of VST scores. The first yellow curve is the normal distribution based on the mean and standard deviation of the VST scores. The second purple curve represents the density of actual VST scores, showing where scores are most concentrated.">')
+cat('<img src="plot7.png" alt="Plot showing two curves over a range of VST scores. The first orange curve is the normal distribution based on the mean and standard deviation of the VST scores. The second blue curve represents the density of actual VST scores, showing where scores are most concentrated.">')
 ```
 
 It appears as though our data is not normally distributed (the red line that represents the actual data doesn't look very much like the blue line, which represents a normal distribution). 
@@ -339,6 +342,7 @@ Let us assume for a moment that the scores are normally distributed with a range
 #don't worry too much about this code - see the plot
 library(dplyr)
 library(ggplot2)
+
 distr <- data.frame(x=seq(30, 50, length=300)) %>%
   mutate( density = dnorm(x, mean=40, sd=5))
 

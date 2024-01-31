@@ -33,7 +33,6 @@ In order to ensure that our paired samples tests are conducted correctly, we wil
 
 ```{r}
 library(dplyr) #load dplyr
-
 mydata.2 <-arrange(mydata, Participant, Prompt) #sort by Participant, then by prompt
 head(mydata.2) #check the first few entries to make sure things are sorted correctly
 ```
@@ -43,58 +42,29 @@ One way to visualize the data is to use box plots, much like we did with our ind
 
 ```{r}
 library(ggplot2)
-library(viridis) #color-friendly palettes
-
-g1<- ggplot(mydata.2, aes(x=Prompt, y=MRC_Concreteness_AW, color=Prompt)) +
+ggplot(mydata.2, aes(x=Prompt,y=MRC_Concreteness_AW, color = Prompt)) +
   geom_boxplot() +
-  geom_jitter(shape=16, position=position_jitter(0.2), color="grey") +
-  #scale_color_viridis_d()  #either do this or use custom colors for color friendly visualization
-  scale_color_manual(values = c("#377eb8", "orange"))
-
-#print(g1)
-```
-```{r, echo=FALSE, results='asis'}
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot1.png" alt="Boxplots comparing two prompts, PTJ and SMK, on the MRC_Concreteness_AW score. The PTJ boxplot is on the left, while the SMK boxplot is on the right. Both boxplots are overlaid with grey jittered points that represent individual data points.">')
+  geom_jitter(shape=16, position=position_jitter(0.2), color = "grey")
 ```
 
-While this view gives us a general impression of the differences between the two prompts, it DOESN'T show us differences by individual. The following plot will be a little messy because we have 250 participants. However, most studies will have far fewer participants (which results in a cleaner plot).
+
+While this view gives us a general impression of the differences between the two prompts, it DOESN'T show us differences by individual. The following plot will be a little messy because we have 250 participants. However, most studies will have far fewer particpants (which results in a cleaner plot).
 
 ```{r}
-g2 <- ggplot(mydata.2, aes(x=Prompt, y=MRC_Concreteness_AW)) +
+ggplot(mydata.2, aes(x=Prompt,y=MRC_Concreteness_AW)) +
   geom_boxplot() +
   geom_point(aes(color = Participant), show.legend = FALSE) +
-  geom_line(aes(group = Participant, color = Participant), show.legend = FALSE) +
-  scale_color_viridis_d()
-
-#print(g2)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot2.png", plot = g2, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot2.png" alt="Lines comparing MRC_Concreteness_AW scores between two prompts, PTJ and SMK. The boxplot for PTJ is on the left and SMK on the right, with individual participant scores connected by lines.">')
+  geom_line(aes(group = Participant, color = Participant), show.legend = FALSE)
 ```
 
 Just for illustrative purposes, lets pretend that our dataset only included the first 15 participants in our larger dataset. This view lets us see that SOME participants have lower meaningfullness scores for the SMK prompt than the PTJ, but overall, essays written in response to the part time job prompt tend to have lower scores.
 
 ```{r}
 mydata.3 <- mydata.2[1:30, ] #create new dataframe with the first 30 rows from mydata.2
-
-g3 <- ggplot(mydata.3, aes(x=Prompt,y=MRC_Concreteness_AW)) +
+ggplot(mydata.3, aes(x=Prompt,y=MRC_Concreteness_AW)) +
   geom_boxplot() +
   geom_point(aes(color = Participant), show.legend = FALSE) +
-  geom_line(aes(group = Participant, color = Participant), show.legend = FALSE)+
-  scale_color_viridis_d()
-
-#print(g3)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot3.png" alt="Lines comparing MRC_Concreteness_AW scores for 30 participants, comparing two prompts, PTJ and SMK. The boxplot for PTJ is on the left and SMK on the right, with individual participant scores connected by lines.">')
+  geom_line(aes(group = Participant, color = Participant), show.legend = FALSE)
 ```
 
 ### Dependent samples T-test
@@ -109,35 +79,16 @@ To conduct a dependent samples T-test, we first have to check for assumptions. T
 First, we can check visually for normality. Note that we will use a "group" in ggplot and will also add "facet_wrap", which allows us to see individual plots for each level of a categorical variable (in this case, prompt).
 
 ```{r}
-g4 <-  ggplot(mydata.2, aes(x = MRC_Concreteness_AW, group = Prompt, fill = Prompt))+
-  geom_histogram(binwidth = 2, color = "black") +#adjust bin width and outline color for bars
-  #scale_fill_viridis_d() + #either do this or use custom colors 
-  scale_fill_manual(values = c("#377eb8", "orange")) +  #custom colors for the fill
+ggplot(mydata.2, aes(x = MRC_Concreteness_AW, group = Prompt, color = Prompt))+
+  geom_histogram() +
   facet_wrap(~Prompt)
-
-#print(g4)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot4.png", plot = g4, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot4.png" alt="Plots showing the distribution of MRC_Concreteness_AW scores for two different prompt, PTJ and SMK. The histrogram for PTJ is on the left, while the histogram for SMK is on the right.">')
 ```
 
 We can also check this with a density plot:
 
 ```{r}
-g5 <- ggplot(mydata.2, aes(x = MRC_Concreteness_AW, group = Prompt, fill = Prompt))+
-  geom_density(alpha = 0.4)+
-  scale_fill_manual(values = c("#377eb8", "orange")) #custom colors for the fill
-
-#print(g5)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot5.png", plot = g5, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot5.png" alt="Density plots showing the distribution of MRC_Concreteness_AW scores for two different prompts, PTJ and SMK. The density for PTJ is shaded in blue and for SMK in orange, with two plots having overlapping regions.">')
+ggplot(mydata.2, aes(x = MRC_Concreteness_AW, group = Prompt, color = Prompt, fill = Prompt))+
+  geom_density(alpha = 0.4)
 ```
 
 Based on the histograms and density plots, is the data normally distributed?
@@ -169,18 +120,8 @@ We will re-look at our boxplots below to visually inspect the degree to which ou
 
 ```{r}
 library(ggplot2)
-
-g6 <- ggplot(mydata.2, aes(x=Prompt,y=MRC_Concreteness_AW, color = Prompt)) +
-  geom_boxplot()+
-  scale_color_manual(values = c("#377eb8", "orange")) #custom colors
-
-#print(g6)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot6.png", plot = g6, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot6.png" alt="Boxplots comparing two prompts, PTJ and SMK, on the MRC_Concreteness_AW score. The PTJ boxplot is on the left, while the SMK boxplot is on the right.">')
+ggplot(mydata.2, aes(x=Prompt,y=MRC_Concreteness_AW, color = Prompt)) +
+  geom_boxplot()
 ```
 
 According to the boxplots, how does the variance differ (and to what degree)?

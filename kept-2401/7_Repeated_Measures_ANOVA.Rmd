@@ -32,58 +32,26 @@ First, we can look at the means at each time point.
 
 ```{r}
 library(ggplot2)
-library(viridis) #color-friendly palettes
-
-g1 <- ggplot(data = mydata, aes(x = FTime, y = Score, group = Time)) +
+ggplot(data = mydata, aes(x = FTime, y = Score, group = Time)) +
   geom_boxplot()
-
-#print(g1)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot1.png", plot = g1, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot1.png" alt="Boxplot showing score distribution across six time points. Each box represents the interquartile range, which contains the horizontal line within each box marks the median score. The whiskers extend to the furthest points that are not considered outliers. Potential outliers are represented as individual black dots outside the whiskers.">')
 ```
 
 Then, we can get a clearer view by looking at individual trajectories.
 
 ```{r}
-g2 <- ggplot(data = mydata, aes(x = FTime, y = Score, group = Participant)) +
+library(ggplot2)
+ggplot(data = mydata, aes(x = FTime, y = Score, group = Participant)) +
   geom_boxplot(aes(group=Time)) +
   geom_line(aes(color=Participant)) +
-  geom_point(aes(color=Participant)) +
-  scale_color_viridis(discrete = TRUE)
-
-#print(g2)
+  geom_point(aes(color=Participant))
 ```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot2.png", plot = g2, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot2.png" alt="A multi-colored line and boxplot chart representing scores over six time points for nine participant labeled EFL_1 to EFL_9. Each participant\'s scores are connected by lines, with distinct colors. The boxplot overlaid on the line chart shows the distribution of scores at each time point, with the median score indicated by a horizontal line within each box. The whiskers extend to the furthest points that are not considered outliers. Potential outliers are represented as individual dots outside the whiskers.">')
-```
-
 Sometimes, we get a clearer view of individual trajectories when we use facet wrap:
 
 ```{r}
-# customizing colors
-colors <- c("orange", "#56B4E9", "#009E73", "gold2", "#0072B2", "purple", "#CC79A7", "#999999", "#000000") 
-
-g3 <- ggplot(data = mydata, aes(x = FTime, y = Score, group = Participant)) +
+ggplot(data = mydata, aes(x = FTime, y = Score, group = Participant)) +
   geom_line(aes(color=Participant)) +
   geom_point(aes(color=Participant)) +
-  scale_color_manual(values = colors) +    
   facet_wrap(~Participant)
-
-#print(g3)
-```
-
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot3.png", plot = g3, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot3.png" alt="A faceted line chart displaying individual score trajectories for nine participants across six time points. The chart is divided into nine panels, one for each participant, showing the progression of scores from time point 1 to 6. The trend in the scores is mostly upwards as time progresses.">')
 ```
 
 ### Conducting repeated measures ANOVA
@@ -139,38 +107,20 @@ First, we can create boxplots.
 
 ```{r}
 library("ggpubr")
-
-g4 <- ggboxplot(mydata2, x = "Time", y = "V_Test", color = "Group",
-          palette = c("#377eb8", "orange"))
-
-#print(g4)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot4.png", plot = g4, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot4.png" alt="Boxplot visualization representing three time points of Pre, Post, and D_Post. Two groups are depicted, Treatment_A in on left and Treatment_B on right. Each time point displays a pair of boxplots corresponding to the two treatments. The boxplots illustrate the median, interquartile range, and any outliers for the V_Test. Outliers are depicted as points beyond the whiskers.">')
+ggboxplot(mydata2, x = "Time",
+          y = "V_Test", 
+          color = "Group")
 ```
 
 We can also visualize the data per participant:
 
 ```{r}
 library("ggplot2")
-
-g5 <- ggplot(mydata2, aes(x=Time, y=V_Test)) +
+ggplot(mydata2, aes(x=Time, y=V_Test)) +
   geom_boxplot() +
   geom_point(aes(color = Participant_ID), show.legend = FALSE) +
   geom_line(aes(group = Participant_ID, color = Participant_ID), show.legend = FALSE) +
-  scale_color_viridis(discrete = TRUE) +
   facet_wrap(~Group)
-
-#print(g5)
-```
-
-```{r, echo=FALSE, results='asis'}
-ggsave("plot5.png", plot = g5, width = 8, height = 6) # for the alt text
-
-cat('<img src="plot5.png" alt=A line plot with boxplot showing three time points of Pre, Post, and D_Post. Two treatment groups are shown: Treatment_A on the leftand Treatment_B on the right. Each line represents an individual progression over time, with points indicating their scores at each time point. The boxplots overlay the lines, summarizing the distribution of scores with medians, interquartile ranges, and outliers.">')
 ```
 
 Finally, we will run the analysis (and interpret our results).

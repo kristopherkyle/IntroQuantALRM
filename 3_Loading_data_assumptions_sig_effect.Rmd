@@ -485,7 +485,7 @@ g11<- ggplot(combined_distr, aes(x = x, y = density, color = group)) +
 ```{r, echo=FALSE, results='asis'}
 ggsave("plot11.png", plot = g11, width = 8, height = 6) # for the alt text
 
-cat('<img src="plot11.png" alt=Plot showing two overlapping normal distribution curves. The first purple curve peaks at a mean of 40, and the second yellow curve peaks at a mean of 45 with the same standard deviation. The curves intersect around a score of 42, highlighting the range where the distributions of both classes overlap.">')
+cat('<img src="plot11.png" alt="Plot showing two overlapping normal distribution curves. The first purple curve peaks at a mean of 40, and the second yellow curve peaks at a mean of 45 with the same standard deviation. The curves intersect around a score of 42, highlighting the range where the distributions of both classes overlap.">')
 ```
 
 To calculate Cohen's D for the difference between these two samples, we subtract the mean of the blue class (45) from the mean of the red class (40), which leaves us with (40-45 = -5). We then divide this number by the pooled standard deviation (in this case 5). So, Cohen's D = (|-5/5| = 1.00), which is a large effect (according to Cohen, 1988). 

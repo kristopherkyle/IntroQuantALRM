@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = TRUE)
     - add additional data to a bar chart
 
 ## Getting started
-One particularly powerful aspect of R is that it enables one visualize data in a variety of ways. Additionally, it gives users a wide variety of customization options. We will work below on a number of common data visualizations. But rememeber, once you get the hang of the basics, the sky is the limit! Note that this tutorial is a simplified version of [this one] (https://r4ds.had.co.nz/data-visualisation.html). For more details on what is possible, check out the source webpages!
+One particularly powerful aspect of R is that it enables one visualize data in a variety of ways. Additionally, it gives users a wide variety of customization options. We will work below on a number of common data visualizations. But rememeber, once you get the hang of the basics, the sky is the limit! Note that this tutorial is a simplified version of [this one](https://r4ds.had.co.nz/data-visualisation.html). For more details on what is possible, check out the source webpages!
 
 To get started, lets load ggplot and look at one of the datasets that comes with ggplot:
 
